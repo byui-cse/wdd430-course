@@ -1,0 +1,714 @@
+Write an OpenAPI 3 specification in valid yaml for the following API endpoints:
+Unless otherwise specified use the following as the response body for 400, 401, 403,404, and 500 responses:
+{
+  "type": "object",
+  "properties": {
+    "message": { "type": "string" }
+  },
+  "required": ["message"]
+}
+400 message: "Bad Request"
+401 message: "Unauthorized"
+403 message: "Forbidden"
+404 message: "Not Found"
+500 message: "Internal Server Error"
+
+Products API endpoints:
+GET /products/{id}
+GET /products/
+
+The JSON schema for the data returned by the products endpoints is:
+{
+  type: 'object',
+  properties: {
+    _id: { type: 'string' },
+    id: { type: 'string' },
+    isClearance: { type: 'boolean' },
+    category: {
+      type: 'string',
+      enum: ['tents', 'backpacks', 'sleeping-bags', 'hammocks'],
+      description: 'Category of the product, should not be blank and should be either tents, backpacks, sleeping-bags or hammocks'
+    },
+    isNew: { type: 'boolean' },
+    url: { type: 'string' },
+    reviews: {
+      type: 'object',
+      properties: {
+        reviewsUrl: { type: 'string' },
+        reviewCount: { type: 'number' },
+        averageRating: { type: 'number' }
+      }
+    },
+    nameWithoutBrand: {
+      type: 'string',
+      description: 'Name of the product without the brand, should be a string and cannot be blank'
+    },
+    name: {
+      type: 'string',
+      description: 'Name of the product, including the brand, should be a string and cannot be blank'
+    },
+    images: {
+      type: 'object',
+      properties: {
+        primarySmall: { type: 'string' },
+        primaryMedium: { type: 'string' },
+        primaryLarge: { type: 'string' },
+        primaryExtraLarge: { type: 'string' },
+        extraImages: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              title: { type: 'string' },
+              src: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    sizesAvailable: {
+      type: 'object',
+      properties: {
+        zipper: {
+          type: 'array',
+          items: { type: 'string' }
+        },
+        size: {
+          type: 'array',
+          items: { type: 'string' }
+        }
+      }
+    },
+    colors: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          colorCode: { type: 'string' },
+          colorName: { type: 'string' },
+          colorChipImageSrc: { type: 'string' },
+          colorPreviewImageSrc: { type: 'string' }
+        }
+      },
+      description: 'If a product has different color options then they should be listed here as an array of objects with colorCode, colorName, colorChipImageSrc, and colorPreviewImageSrc properties.'
+    },
+    descriptionHtmlSimple: {
+      type: 'string',
+      description: 'Description of the product as a string and cannot be blank'
+    },
+    suggestedRetailPrice: { type: 'number', description: 'Suggested Price from the manufacturer' },
+    brand: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        url: { type: 'string' },
+        productsUrl: { type: 'string' },
+        logoSrc: { type: 'string' },
+        name: { type: 'string' }
+      }
+    },
+    listPrice: { type: 'number', description: 'List Price from the manufacturer' },
+    finalPrice: { type: 'number', description: 'Final Price of the product after any discounts or promotions have been applied. This should be a number and cannot be blank' }
+  }
+};
+
+For GET /products/{id}, the request body is empty. The 200 is the schema defined above.
+For GET /products, the request body is empty
+it allows the following url parameters:
+{
+    "q": string,
+    "category": string,
+    "fields": string[],
+    "limit": number,
+    "offset": number
+}
+The fields property is an array of strings that specify which fields to include in the response for each product. For example, if you set fields=["Name", "FinalPrice"], then the response will only contain the name and price properties for each product.
+The 200 response body should be the products in JSON format with the schema defined above. The 404 response should have a message of "Product not found". For other errors, provide response for 400,401,403,500 error codes as appropriate
+Any GET request to an endpoint without an identifier should wrap the requested data in an object like this:
+{
+  "count":number,"next":string|null,"previous":string|null,"results":[]
+}
+where count is the total number of results, next is a url to the next page, prev is a url to the previous page, and results is an array of objects that represent each results, each object should have the schema defined above
+
+Write an OpenAPI 3 specification in valid yaml for the following API endpoints:
+users API endpoints:
+GET /users/{id} 
+POST /users/
+PUT /users/{id}
+POST /users/login
+POST /users/logout
+PUT,POST, and GET users endpoints require authentication headers.
+login and logout do not require authentication
+
+For GET /users/{id}, the request body is empty. The response body for 200 should be a JSON object with the following properties:
+{
+  $schema: "http://json-schema.org/draft-07/schema#",
+  title: "User",
+  description: "",
+  type: "object",
+  properties: {
+    _id: { type: "string" },
+    email: { type: "string", format: "email" },
+    password: {
+      type: "string",
+      minLength: 6,
+      maxLength: 100,
+      description:
+        "The password of the user, must be at least six characters long and no more than one hundred characters long"
+    },
+    name: {
+      type: "string",
+      minLength: 2,
+      maxLength: 50,
+      description:
+        "The name of the user, must be at least two characters long and no more than 50 characters long"
+    },
+    address: {
+      type: "object",
+      properties: {
+        street: {
+          type: "string",
+          minLength: 10,
+          maxLength: 100,
+          description:
+            "The street address of the user, must not be blank and must be at least ten characters long and no more than one hundred characters long"
+        },
+        city: {
+          type: "string",
+          minLength: 5,
+          maxLength: 50,
+          description:
+            "The city of the user, must not be blank and must be at least five characters long and no more than fifty characters long"
+        },
+        state: {
+          type: "string",
+          enum: [
+            "AL",
+            "AK",
+            "AZ",
+            "AR",
+            "CA",
+            "CO",
+            "CT",
+            "DE",
+            "DC",
+            "FL",
+            "GA",
+            "HI",
+            "ID",
+            "IL",
+            "IN",
+            "IA",
+            "KS",
+            "KY",
+            "LA",
+            "ME",
+            "MD",
+            "MA",
+            "MI",
+            "MN",
+            "MS",
+            "MO",
+            "MT",
+            "NE",
+            "NV",
+            "NH",
+            "NJ",
+            "NM",
+            "NY",
+            "NC",
+            "ND",
+            "OH",
+            "OK",
+            "OR",
+            "PA",
+            "RI",
+            "SC",
+            "SD",
+            "TN",
+            "TX",
+            "UT",
+            "VT",
+            "VA",
+            "WA",
+            "WV",
+            "WI",
+            "WY"
+          ],
+          description:
+            "The state of the user, must not be blank and must be one of the following states: AL, AK, AZ, AR, CA, CO, CT, DE, DC, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD, MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI, SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY"
+        },
+        zipCode: {
+          type: "string",
+          minLength: 5,
+          maxLength: 10,
+          pattern: "^\\d{5}(-\\d{4})?$",
+          description:
+            "The zip code of the user, must not be blank and must be a valid zip code"
+        },
+        country: {
+          type: "string",
+          minLength: 2,
+          maxLength: 30,
+          pattern: "^\\w+$",
+          description:
+            "The country of the user, must not be blank and must be a valid country"
+        }
+      }
+    },
+    phoneNumbers: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          type: { type: "string" },
+          number: { type: "string" }
+        }
+      }
+    },
+    cart: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          productId: { type: "string" },
+          productName: { type: "string" },
+          price: { type: "number" },
+          finalPrice: { type: "number" },
+          productImageSrc: { type: "string" },
+          productUrl: { type: "string" },
+          productCategory: { type: "string" },
+          productColor: {
+            type: "object",
+            properties: {
+              colorCode: { type: "string" }
+            }
+          },
+          productSize: { type: "string" }
+        }
+      }
+    },
+    createdAt: { type: "date" },
+    modifiedAt: { type: "date" }
+  },
+  required: ["email", "password", "name", "createdAt", "modifiedAt"]
+};
+
+For POST /users/login, the request body is a JSON object with the following properties:
+{
+    "username": string,
+    "password": string
+}
+The response body is a JSON object with the following properties:
+{
+  "token": string,
+  "user": {
+  "id": string,
+  "name": string,
+  "email": string,
+  }
+}
+For POST /users/, the request body is a JSON object with the following schema:
+{
+  $schema: "http://json-schema.org/draft-07/schema#",
+  title: "User",
+  description: "",
+  type: "object",
+  properties: {
+    _id: { type: "string" },
+    email: { type: "string", format: "email" },
+    password: {
+      type: "string",
+      minLength: 6,
+      maxLength: 100,
+      description:
+        "The password of the user, must be at least six characters long and no more than one hundred characters long"
+    },
+    name: {
+      type: "string",
+      minLength: 2,
+      maxLength: 50,
+      description:
+        "The name of the user, must be at least two characters long and no more than 50 characters long"
+    },
+    address: {
+      type: "object",
+      properties: {
+        street: {
+          type: "string",
+          minLength: 10,
+          maxLength: 100,
+          description:
+            "The street address of the user, must not be blank and must be at least ten characters long and no more than one hundred characters long"
+        },
+        city: {
+          type: "string",
+          minLength: 5,
+          maxLength: 50,
+          description:
+            "The city of the user, must not be blank and must be at least five characters long and no more than fifty characters long"
+        },
+        state: {
+          type: "string",
+          enum: [
+            "AL",
+            "AK",
+            "AZ",
+            "AR",
+            "CA",
+            "CO",
+            "CT",
+            "DE",
+            "DC",
+            "FL",
+            "GA",
+            "HI",
+            "ID",
+            "IL",
+            "IN",
+            "IA",
+            "KS",
+            "KY",
+            "LA",
+            "ME",
+            "MD",
+            "MA",
+            "MI",
+            "MN",
+            "MS",
+            "MO",
+            "MT",
+            "NE",
+            "NV",
+            "NH",
+            "NJ",
+            "NM",
+            "NY",
+            "NC",
+            "ND",
+            "OH",
+            "OK",
+            "OR",
+            "PA",
+            "RI",
+            "SC",
+            "SD",
+            "TN",
+            "TX",
+            "UT",
+            "VT",
+            "VA",
+            "WA",
+            "WV",
+            "WI",
+            "WY"
+          ],
+          description:
+            "The state of the user, must not be blank and must be one of the following states: AL, AK, AZ, AR, CA, CO, CT, DE, DC, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD, MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI, SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY"
+        },
+        zipCode: {
+          type: "string",
+          minLength: 5,
+          maxLength: 10,
+          pattern: "^\\d{5}(-\\d{4})?$",
+          description:
+            "The zip code of the user, must not be blank and must be a valid zip code"
+        },
+        country: {
+          type: "string",
+          minLength: 2,
+          maxLength: 30,
+          pattern: "^\\w+$",
+          description:
+            "The country of the user, must not be blank and must be a valid country"
+        }
+      }
+    },
+    phoneNumbers: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          type: { type: "string" },
+          number: { type: "string" }
+        }
+      }
+    },
+    createdAt: { type: "date" },
+    modifiedAt: { type: "date" }
+  },
+  required: ["email", "password", "name", "createdAt", "modifiedAt"]
+};
+The response body is a JSON object with the following properties:
+{
+    "token": string,
+    "user": {
+    "id": string,
+    "name": string,
+    "email": string,
+    }
+}
+For PUT /users/{id} the request body will be a JSON object with the following schema:
+{
+  $schema: "http://json-schema.org/draft-07/schema#",
+  title: "User",
+  description: "",
+  type: "object",
+  properties: {
+    _id: { type: "string" },
+    email: { type: "string", format: "email" },
+    password: {
+      type: "string",
+      minLength: 6,
+      maxLength: 100,
+      description:
+        "The password of the user, must be at least six characters long and no more than one hundred characters long"
+    },
+    name: {
+      type: "string",
+      minLength: 2,
+      maxLength: 50,
+      description:
+        "The name of the user, must be at least two characters long and no more than 50 characters long"
+    },
+    address: {
+      type: "object",
+      properties: {
+        street: {
+          type: "string",
+          minLength: 10,
+          maxLength: 100,
+          description:
+            "The street address of the user, must not be blank and must be at least ten characters long and no more than one hundred characters long"
+        },
+        city: {
+          type: "string",
+          minLength: 5,
+          maxLength: 50,
+          description:
+            "The city of the user, must not be blank and must be at least five characters long and no more than fifty characters long"
+        },
+        state: {
+          type: "string",
+          enum: [
+            "AL",
+            "AK",
+            "AZ",
+            "AR",
+            "CA",
+            "CO",
+            "CT",
+            "DE",
+            "DC",
+            "FL",
+            "GA",
+            "HI",
+            "ID",
+            "IL",
+            "IN",
+            "IA",
+            "KS",
+            "KY",
+            "LA",
+            "ME",
+            "MD",
+            "MA",
+            "MI",
+            "MN",
+            "MS",
+            "MO",
+            "MT",
+            "NE",
+            "NV",
+            "NH",
+            "NJ",
+            "NM",
+            "NY",
+            "NC",
+            "ND",
+            "OH",
+            "OK",
+            "OR",
+            "PA",
+            "RI",
+            "SC",
+            "SD",
+            "TN",
+            "TX",
+            "UT",
+            "VT",
+            "VA",
+            "WA",
+            "WV",
+            "WI",
+            "WY"
+          ],
+          description:
+            "The state of the user, must not be blank and must be one of the following states: AL, AK, AZ, AR, CA, CO, CT, DE, DC, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD, MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI, SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY"
+        },
+        zipCode: {
+          type: "string",
+          minLength: 5,
+          maxLength: 10,
+          pattern: "^\\d{5}(-\\d{4})?$",
+          description:
+            "The zip code of the user, must not be blank and must be a valid zip code"
+        },
+        country: {
+          type: "string",
+          minLength: 2,
+          maxLength: 30,
+          pattern: "^\\w+$",
+          description:
+            "The country of the user, must not be blank and must be a valid country"
+        }
+      }
+    },
+    phoneNumbers: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          type: { type: "string" },
+          number: { type: "string" }
+        }
+      }
+    },
+    cart: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          productId: { type: "string" },
+          productName: { type: "string" },
+          price: { type: "number" },
+          finalPrice: { type: "number" },
+          productImageSrc: { type: "string" },
+          productUrl: { type: "string" },
+          productCategory: { type: "string" },
+          productColor: {
+            type: "object",
+            properties: {
+              colorCode: { type: "string" }
+            }
+          },
+          productSize: { type: "string" }
+        }
+      }
+    },
+    createdAt: { type: "date" },
+    modifiedAt: { type: "date" }
+  },
+  required: ["email", "password", "name", "createdAt", "modifiedAt"]
+};
+For a 200 response the body will be a JSON object with the following properties:
+{
+    "message": "User updated successfully",
+}
+
+
+For POST /users/logout, the request body is empty. The response body is an empty object. a response with status code 200 indicates that the user has successfully logged out.
+
+Write an OpenAPI 3 specification in valid yaml for the following API endpoints:
+orders API endpoints:
+GET /orders/{id}
+PUT /orders/{id}
+DELETE /orders/{id}
+GET /orders/user/{id}
+POST /orders/
+All orders endpoints require authentication
+For GET /orders/{id}, the request body is empty. The response body is a JSON object with the following properties:
+{
+    "order": {
+        "id": string,
+        "userId": string,
+        "status": string,
+        "totalPrice": number,
+        "createdOn": Date,
+        "items": [
+            {
+                "productId": string,
+                "quantity": number,
+                "price": number
+            }
+        ]
+    }
+}
+For PUT /orders/{id}, the request body is a JSON object with the following properties:
+{
+    "status": string
+    }
+For DELETE /orders/{id}, there is no request body. The response body is an empty object.
+For GET /orders/user/{id}, the request body is empty. The response body is a JSON object with the following properties:
+{
+    "orders": [
+        {
+            "order": {
+                "id": string,
+                "userId": string,
+                "status": string,
+                "totalPrice": number,
+                "createdOn": Date,
+                "items": [
+                    {
+                        "productId": string,
+                        "quantity": number,
+                        "price": number
+                    }
+                ]
+            },
+            "user": {
+                "id": string,
+                "username": string,
+                "email": string,
+            }
+        }
+    ]
+}
+
+For POST /orders/, the request body is a JSON object with the following properties:
+{
+    "userId": string,
+    "items": [
+        {
+            "productId": string,
+            "quantity": number
+        }
+    ]
+}
+The response body is an empty object.
+
+Write an OpenAPI 3 specification in valid yaml for the following API endpoints:
+alerts API endpoints:
+GET /alerts/{id}
+PUT /alerts/{id}
+POST /alerts/
+DELETE /alerts/{id}
+PUT,POST, and DELETE alerts endpoints require authentication headers.
+The request body for GET /alerts/{id} is an empty object. The response body is a JSON object with the following properties:
+{
+    "id": string,
+    "title": string,
+    "description": string,
+    "type": string,
+    "status": string,
+    "createdOn": Date,
+    "modifiedOn": Date,
+}
+The request body for PUT /alerts/{id} is a JSON object with the following properties:
+{
+    "title": string,
+    "description": string,
+    "type": string,
+    "status": string,
+}
+There is no request body for DELETE /alerts/{id}. The response body is an empty object.
+The request body for POST /alerts/ is a JSON object with the following properties:
+{
+    "title": string,
+    "description": string,
+    "type": string,
+    "status": string,
+}
+
+The base server url is http://localhost:3000  

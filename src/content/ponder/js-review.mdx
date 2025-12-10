@@ -1,0 +1,394 @@
+---
+title: Javascript Review
+description: This activity will review core concepts in Javascript that you need to succeed.
+time: 1-2 hours
+---
+
+## Introduction
+
+It is expected that you have learned and mastered the information made available to you in WDD 230/231 and its prerequisite courses. If you feel rusty, the following is a more specific list of topics you would have been introduced to in those courses that will be important that you are comfortable with, and some sources to use for review before the course begins.
+
+1. Make sure you have a good understanding of variables, scope, and template literals in JavaScript. If you need a review in any of those areas read [Grammar and Types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_Types).
+
+2. Make sure you have a good understanding of Array methods such as `.forEach()`, `.map()`, `.filter()`, and `.sort()`. If you need a review either read [15 Must-Know JavaScript Array Methods](https://livecodestream.dev/post/2020-06-05-15-must-know-javascript-array-methods/) OR complete the [Array Cardio Day 1 lesson](https://javascript30.com) from JavaScript30.com.
+
+3. Make sure you recognize and can use the three main function forms in JavaScript (declaration, expression, arrow). You should also understand the concept of callbacks. If you need a review you can read [MDN Functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions) and [JavaScript Callbacks](https://www.javascripttutorial.net/javascript-callback/).
+
+4. Make sure you are comfortable with basic DOM manipulation with JavaScript. If you need a review you can read [MDN Manipulating Documents](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Manipulating_documents).
+
+5. Make sure you are comfortable with basic event management with JavaScript. If you need a review you can read [MDN Introduction to Events](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events).
+
+## **01** Fundamentals
+
+Turn to a neighbor and explain the following: "What are variables, scope, and template literals in JavaScript?" Then have your neighbor give examples of how they are used.
+
+If you are struggling to explain try asking an AI chatbot to explain it to you first...then explain it to your neighbor. Ditto for examples.
+
+>If you are online and don't have a neighbor handy you can have AI explain it to you, then you can explain it back in your own words...or you could give an example of use and ask "Is this a good example?"
+
+## **02** Functions
+
+Turn to a neighbor and explain the following: "What is difference between the three function forms in Javascript? (declaration, expression, arrow)" Again have your neighbor then give examples.
+
+## **03** Callbacks
+
+Let's say we wanted to write a function that returned the doubled value of a number passed in. It might look like this:
+
+```javascript
+function double(x) {
+    return x * 2;
+}
+```
+
+However, what if we wanted to write a function that returned the doubled value of a list of numbers passed in?
+
+```javascript
+function doubleList(numbers) {
+    let result = [];
+    for(let i=0;i< numbers.length; i++){
+        result.push(double(item));
+    }
+    return result;
+}
+```
+
+Notice how we leveraged the double function we wrote earlier. This is fine...but what if we now wanted to triple the number?
+
+```javascript
+function triple(x) {
+    return x * 3;
+    }
+function tripleList(numbers) {
+    let result = [];
+    for(let i=0;i< numbers.length; i++){
+        result.push(triple(item));
+    }
+    return result;
+    }
+```
+
+Notice how much of the code is duplicated? Whenever we see this much duplication there is an opportunity for some optimization.  What if we make our list function more generic...maybe something like `modifyList` Then what if we could pass in the way we want to modify it when we use the function? This is a perfect use case for a `callback`. Callbacks are functions passed into other functions and are very useful. Our new code might look like this:
+
+```javascript
+const list=[1,2,3,4];
+function double(x) {
+    return x * 2;
+}
+function triple(x) {
+    return x * 3;
+}
+function modifyList(list, transform) {
+    let result = [];
+    for(let i=0;i< list.length; i++){
+        // notice that here we use () to execute the function when we are ready.
+        result.push(transform(item));
+    }
+    return result;
+}
+// notice here that we do not have ()! 
+// We don't want to execute the function here...
+// but send it to modifyList and let that function decide when to execute our callback
+const doubledList = modifyList(list, double);
+const tripledList = modifyList(list, triple);
+```
+
+This is much cleaner and easier to maintain. We can now easily add new transformations by just adding a
+new function. This is a great example of how callbacks can be used to make code more generic and
+easier to maintain.
+
+## **03** Array Methods
+
+In the last example we created a flexible function we can use to modify or transform a list into some other form. That should sound familiar to you...we just re-created the `Array.map` method! Take a look:
+
+```javascript
+const list=[1,2,3,4];
+function double(x) {
+    return x * 2;
+}
+function triple(x) {
+    return x * 3;
+}
+// our custom function
+function modifyList(list, transform) {
+    let result = [];
+    for(let i=0;i< list.length; i++){
+        // notice that here we use () to execute the function when we are ready.
+        result.push(transform(item));
+    }
+    return result;
+}
+// here we use our custom function
+const doubledList = modifyList(list, double);
+// doing the same thing with Array.map
+const tripledList = list.map(triple);
+```
+
+Most of the built in array methods use callbacks. Understanding how to use them will make just about everything you do in Javascript easier. (and keep us from re-creating the wheel over and over for common tasks).
+
+For example when we wrote our `modifyList` function we used a standard for loop:
+
+```javascript
+for(let i=0;i< list.length; i++){
+        result.push(transform(item));
+}
+```
+
+When looping over a list, there is actually a better way: `forEach`. This is how it would look if we used that instead:
+
+```javascript
+function modifyList(list, transform) {
+    let result = [];
+    // changed to forEach
+    list.forEach(item => {
+        result.push(transform(item));
+    });
+    return result;
+}
+```
+
+With `forEach` we don't have to worry about when to stop the loop. It will automatically loop over each item and then stop. Notice that again we are using a callback, but this time it is in the form of an arrow function and declared in place! This is a very common pattern.
+
+Here are a few more examples of common array methods that use callbacks. Do a bit of research on your own to make sure you can use them.
+
+- filter
+- reduce
+- find
+- sort
+
+## **04** Fetch and Promises
+
+When we need to retrieve information from an external source for our web page after it has loaded we use `Fetch`. There is a potential problem however. Requesting data from an external source is can take a while. The Javascript engine is single threaded, which means it can only do one thing at a time, so making our fetch call has the potential to "lock the thread" meaning that once it starts nothing else will happen until it finishes if it stays on the stack. Not good.
+
+To deal with this the browser adds the fetch call to the stack to kick it off, then removes it and stashes it to the side until it finishes.  Once it finishes we usually will want to do something with the stuff we fetched...so the function gets put back on the stack to finish it up. We need to have a way of letting the browser know what to do when it is done and back on the call stack. This is done through [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+
+You should remember from previous classes using the `async/await` syntax.  This is the most common way of telling the browser what it should do when the promise resolves...or finishes. Let's look at an example:
+
+```javascript
+const baseUrl = "https://pokeapi.co/api/v2/pokemon/";
+
+async function getData(url) {
+    console.log("getData Starts")
+  const response = await fetch(baseUrl + url);
+  console.log(response);
+  const data = await response.json();
+  console.log("inside getData", data);
+  return data;
+}
+
+const data = getData("ditto");
+console.log("after getData", data)
+
+```
+
+If you run this code what will you see in the console? Discuss with a neighbor, then look below.
+
+import Details from '../../components/Details.astro'
+
+<Details summary="Results" >
+
+When you run this code you will see the following in the console:
+
+1. getData Starts
+2. after getData, undefined
+3. inside getData, the data
+
+Were you surprised by any part of this?
+
+Async functions always return a promise. So even though we did `const data = await response.json();` we still have to `await` again when we run the function if we need the results of that function to be ready before we move on...which we did in this case.
+
+</Details>
+
+To get this to work we need to `await` the call to `getData`. In the past we could only do that inside of another `async` function, but we now have [top level await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await#top_level_await). But this only works in ESModules. So we can't take advantage of it here.
+
+```javascript
+const baseUrl = "https://pokeapi.co/api/v2/pokemon/";
+
+async function getData(url) {
+    console.log("getData Starts")
+  const response = await fetch(baseUrl + url);
+  console.log(response);
+  const data = await response.json();
+  console.log("inside getData", data);
+  return data;
+}
+
+async function init() {
+    const data = await getData("ditto");
+    console.log("after getData", data)
+}
+init();
+
+```
+
+Now the code executes in the order we need it to.
+
+1. getData Starts
+2. inside getData, the data
+3. after getData, the data
+
+## **05** DOM Manipulation and Events
+
+The original purpose of Javascript was to allow developers to make their webpages dynamic. It's reach has moved beyond that, but a large percentage of Javascript written is still of this purpose.
+
+When the browser requests an HTML file from a server, it downloads it then begins parsing though it. It downloads any `script` files and resolves any `link` requests for css, then it starts converting the HTML into code in it's memory. This code is called the Document Object Model, the DOM. For example if we had the following HTML:
+
+```html
+<html>
+  <body>
+    <h1>Hello World</h1>
+    <p class="p1">This is a paragraph.This is a <a href="#">link</a> in a paragraph.</p>
+    <img src="image.jpg" alt="An image">
+  </body>
+</html>
+```
+
+It would look like this in the DOM:
+
+```text
+Document
+ └── html
+     └── body
+         ├── h1 ("Hello World")
+         ├── p.p1 ("This is a paragraph.")
+            ├── text ("This is a ")
+            ├── a ("link")
+            └── text (" in a paragraph.")
+         └── img
+
+```
+
+Each element becomes a node in a tree. In order to make a change to the document structure, we must first find the right node in the tree. We gain access through the `document` object that the browser makes available to us.
+
+The most common tool for finding the right node is with `document.querySelector` With this we can use any valid CSS selector to identify nodes in the DOM. So using the code provided earlier, if we wanted to make a change to the paragraph with the class `p1` we could do the following: `document.querySelector(".p1");`
+
+Once we have it we can make changes. If we wanted to change the contents of that element we could use several methods:
+
+```javascript
+const theP = document.querySelector(".p1");
+theP.textContent = "This is a new paragraph.";
+theP.innerHTML = "This is <em>fancy</em> content";
+theP.insertAdjacentHTML("afterbegin", "I got inserted at the beginning! ");
+```
+The `textContent` method replaces the contents of the element with the string we provide. The `innerHTML` method does the same, but it also parses the string as HTML. The `insertAdjacentHTML` method inserts the string at the specified location in the element.
+
+We can also take advantage of the events that happen in the browser to make things happen. Take the following markup:
+
+```html
+<h2>Shopping list</h2>
+<label for="item">New Item</label>
+<input type="text" id="item" placeholder="Enter item">
+<button id="addButton">Add Item</button>
+<ul id="shopping-list"></ul>
+```
+
+Ideally when a user enters some text and clicks on the button it will be added to the list. We can use event listeners to make this happen.
+
+```javascript
+const addButton = document.querySelector("#addButton");
+const shoppingList = document.querySelector("#shopping-list");
+const itemInput = document.querySelector("#item");
+
+function addHandler(e) {
+    const item = itemInput.value.trim();
+    if (item) {
+        shoppingList.insertAdjacentHTML("beforeend", `<li>${item}</li>`);
+    }
+}
+
+addButton.addEventListener.('click', addHandler);
+```
+
+## **06** Pulling it all together
+
+Let's finish up the review with an activity to pull all these concepts together. 
+
+1. Fetch a list of pokemon from the [pokeapi](https://pokeapi.co).
+2. Transform the list of data objects into a list of HTML strings
+3. Insert the HTML strings into the page.
+4. Add an event listener to the list so that when a user clicks on a pokemon, it
+displays the details of the pokemon.
+
+<Details summary="Solution">
+
+### HTML
+
+```html
+<main>
+    <h1>Pokemon List</h1>
+    <section>
+        <ul id="pokemon-list"></ul>
+        <div id="pokemon-details"></div>
+    </section>
+</main>
+<style>
+section {
+  display: grid;
+  grid-template-columns: 200px auto;
+}
+</style>
+
+```
+
+### JavaScript
+
+```javascript
+const pokemonList = document.querySelector("#pokemon-list");
+const pokemonDetails = document.querySelector("#pokemon-details");
+const apiUrl = "https://pokeapi.co/api/v2/pokemon?limit=40";
+
+// why these template functions?
+// We could have just embedded these template literal strings where we use them...
+// But this way we can reuse them and make the code more readable.
+function pokemonListTemplate(item) {
+    // we need some way of knowing which url to use when a button is clicked.
+    // data- is a great way to stash stuff in custom attributes...
+    return `<li><button data-url="${item.url}">${item.name}</button></li>`;
+}
+
+function pokemonDetailsTemplate(item) {
+    return `
+    <h2>${item.name}</h2>
+    <p>Height: ${item.height}</p>
+    <p>Weight: ${item.weight}</p>
+    <img src="${item.sprites.front_default}" alt="${item.name}">
+    `;
+    }
+
+// note the use of our template function and Array.map.
+// We are transforming a list of objects to a list of html strings.
+// perfect job for map
+function renderPokemonList(pokemon) {
+    const pokemonListHtml = pokemon.map(pokemonListTemplate).join("");
+    pokemonList.insertAdjacentHTML('afterbegin', pokemonListHtml);
+}
+
+async function getData(url) {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+async function pokeListHandler(event) {
+    // the element that triggered the event will always be found in event.target
+    const pokemonUrl = event.target.dataset.url;
+    const list = await getData(pokemonUrl);
+    const detailsHtml = pokemonDetailsTemplate(list);
+    // why this line?
+    pokemonDetails.innerHTML = '';
+    pokemonDetails.insertAdjacentHTML('afterbegin', detailsHtml);
+}
+async function init() {
+    const data = await getData(apiUrl);
+    const pokemon = data.results;
+    renderPokemonList(pokemon);
+}
+// we attach the listener to the list instead of the items.
+// then we only have to do it once, instead of everytime we render the list.
+pokemonList.addEventListener('click', pokeListHandler)
+init();
+```
+
+</Details>

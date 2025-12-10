@@ -1,0 +1,304 @@
+---
+title: Typescript Introduction
+description: This activity will introduce Typescript and provide some review for NodeJs development.
+time: 1-2 hours
+---
+
+import Details from '../../components/Details.astro'
+
+## Introduction
+
+Javascript is a weakly typed language. This means that if you do something like the following, Javascript will happily comply:
+
+```javascript
+let x = 5;
+x = "hello";
+
+let a = 2;
+let b = "3";
+let c = a + b; // c = "23"
+```
+
+Variables changing types unexpectedly can lead to bugs that are hard to track down. Typescript is a superset of Javascript that adds optional static typing and other features to improve the development experience. Since Typescript is not Javascript, and the browser only understands Javascript, we must transpile our Typescript code back to Javascript before sending it along. This requires tooling.
+
+## **01** Setup
+
+Typescript can be used in either frontend or backend code, but it's simpler to setup for the frontend, and so we will introduce it that way. Most of the work in fact has already been done for us if we use a tool like Vite that we were introduced to last week with the SleepOutside project.
+
+1. Open a terminal in VSCode and enter `npm create vite@latest` (pnpm works as well).
+2. Give the name that you would like for the directory.
+3. Choose `Vanilla` for the stack.
+4. Choose `Typescript`.
+5. CD into the new folder and `(p)npm install` to install the dependencies.
+6. Start the development server with `(p)npm run dev`.
+
+
+
+## **02** Inspect Code
+
+Take a look at the contents of `main.ts`. Note line 6.
+
+```javascript
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+```
+
+This is one of the first things you will notice when using Typescript. There are extra things! the `<HTMLDivElement>` after querySelector indicates that we expect an object that is a `div` element back from the search. If anything else comes back, say a `section` element for example it will be an error!
+
+One nice side effect of this is that if we were to store this element in a variable and then use it, we would get nice hints about the parts of the object from our editer because we have told it exactly what it should be. We will see an example of this later.
+
+## **03** The Basics
+
+### Variables
+
+Typescript will do it's best to figure out what the types of variables should be. for example if we declare a variable and initialize it: `let myVar = "hello"`, Typescript can see that we are setting the initial value of the variable to a `string` and so it will type it accordingly. If we then try and do something like this: `myVar = 3;`. We will get an error because we are trying to set a `number` to a variable that is supposed to be a `string`. 
+
+If we don't initialize a variable when we declare it will get a type `any`. We should try to avoid having anything typed as `any`
+
+```javascript
+let myVar = "hello"; // deduces type from value
+let myVar2 = 3; // deduces type from value
+
+let total; // no value to use so type:any
+let totalTyped:number; // explictly set type to number
+
+total = myVar + myVar2;  //no error: total is type:any, we can put anything we want in here :)
+totalTyped = myVar + myVar2;  //error: totalTyped is a number and the result of myVar + myVar2 will be a string
+```
+
+### Functions
+    Types show up in two places with functions. Parameters should be typed so the function knows what to expect as inputs, and the return type of the function should be declared as well for any outputs. Look at the following example.  We declare a simple function and notice the type declaration on the argument? We specify that it should always be a number. Note that we don't explicitly declare the return type, but Typescript infers it by looking at what we actually return and figures out that the function returns a number.
+
+```javascript
+function double(x:number) {
+  return x * 2;
+}
+
+let result = double(5);
+console.log(result);  //output: 10
+let result2 = double('1'); // Error: Argument of 'string' is not assignable to parameter of type 'number'
+let result3:string = double(2); //Error: Type 'number' is not assignable to type 'string'
+```
+
+If we pass in something but a number we get an error, and if we try to store the return value in anything but a 'number' type we get an error.
+
+### Objects
+Typescript can also infer the type of objects. If we declare an object and then add properties immediately upon initialization, Typescript will figure out the typing and hold us to it.
+
+```javascript
+let person = {
+    name: 'John',
+    age: 30
+};
+console.log(person.name); //output: John
+console.log(person.age); //output: 30
+person.name = 'Jane'; //no error
+person.age = 31; //no error
+person.country = 'USA'; //error: Property 'country' does not exist on type '{name: string;age: number;}'.
+person.age = "thirty"; //error: Type 'string' is not assignable to type 'number'
+```
+
+Sometimes we declare an object and don't fully initialize it until later...maybe from a fetch call or a form for example. Or maybe the object is being passed as an argument into a function. In this case we have to explicitly declare the object type. This can be done with an `interface`.
+
+```javascript
+interface Person {
+  name: string;
+  age: number;
+  country: string | null;
+}
+
+function greeting(person:Person) {
+  console.log(`Hello, ${person.name}!`);
+}
+```
+
+Notice that after declaring our interface we can use it just like the builtin types. ie `person:Person`. Notice also the `country` property. It says `string | null` This is how we can specify that some fields are optional...country will always be a `string`, OR `null`. If we don't specify this then we must always provide all the properties or there will be errors.
+
+## **04** Another Example
+
+To get some practice using Typescript let's look at a more complex example. We can use the code from the previous review:
+
+1. First let's remove the code we were given. In `main.ts` go ahead and remove everything.
+2. Grab the code from the Javascript practice we completed earlier (You can find it below). Put the Javascript into 'main.ts', put the HTML into `index.html`. You can replace the `app` div.
+<Details summary="Example code">
+
+   ### HTML
+
+```html
+<main>
+    <h1>Pokemon List</h1>
+    <section>
+        <ul id="pokemon-list"></ul>
+        <div id="pokemon-details"></div>
+    </section>
+</main>
+<style>
+section {
+  display: grid;
+  grid-template-columns: 200px auto;
+}
+</style>
+
+```
+
+### JavaScript
+
+```javascript
+const pokemonList = document.querySelector("#pokemon-list");
+const pokemonDetails = document.querySelector("#pokemon-details");
+const apiUrl = "https://pokeapi.co/api/v2/pokemon?limit=40";
+
+function pokemonListTemplate(item) {
+    return `<li><button data-url="${item.url}">${item.name}</button></li>`;
+}
+
+function pokemonDetailsTemplate(item) {
+    return `
+    <h2>${item.name}</h2>
+    <p>Height: ${item.height}</p>
+    <p>Weight: ${item.weight}</p>
+    <img src="${item.sprites.front_default}" alt="${item.name}">
+    `;
+    }
+
+function renderPokemonList(pokemon) {
+    const pokemonListHtml = pokemon.map(pokemonListTemplate).join("");
+    pokemonList.insertAdjacentHTML('afterbegin', pokemonListHtml);
+}
+
+async function getData(url) {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+async function pokeListHandler(event) {
+    const pokemonUrl = event.target.dataset.url;
+    const list = await getData(pokemonUrl);
+    const detailsHtml = pokemonDetailsTemplate(list);
+    pokemonDetails.innerHTML = '';
+    pokemonDetails.insertAdjacentHTML('afterbegin', detailsHtml);
+}
+async function init() {
+    const data = await getData(apiUrl);
+    const pokemon = data.results;
+    renderPokemonList(pokemon);
+}
+
+pokemonList.addEventListener('click', pokeListHandler)
+init();
+```
+</Details>
+3. After you save the files you should notice lots of red squiggles in the Javascript. These are all errors from Typescript. Run `(p)npm run dev` and see if it works.
+4. Notice that the errors don't mean that the code is broken necessarily, but that there are problems that could lead to errors if left.
+
+## **05** Fix errors:pokeListHandler
+
+Let's start with the error with the `pokeListHandler` function. If we hover over the red squiggle we see `Parameter event implicitly has an 'any' type`. This is a very common error. Typescript does the best it can to figure out through context the type a variable should have. For example if we did `const myVar = "Hello";` we would not need to put a type on it because Typscript would recognize that it is a `string` and it will enforce that throughout our code.
+
+Enter `Event` as the type for our argument. That will fix the error on that line, but now we have a new error on the next line, in fact there are two errors: "event.target is possibly null", and "Property 'dataset' does not exist on type 'EventTarget'".
+
+The error in the TypeScript code comes from the fact that TypeScript doesn't know the exact type of `event.target`, and `dataset.url` may not be defined in the expected way. The event is typed as a generic `Event`, which doesn't include the dataset property. Specifically, `event.target` is of type `EventTarget`, which is too general and doesn't include properties like `dataset` that are specific to HTML elements.
+
+To fix this, we need to cast `event.target` to an `HTMLElement` to give us access to the dataset property, and ensure the dataset.url is a string.
+
+```javascript
+async function pokeListHandler(event: Event){
+  const target = event.target as HTMLElement; // Cast event.target to HTMLElement
+  const pokemonUrl = target.dataset.url; // dataset.url is now safely accessible
+  const list = await getData(pokemonUrl);
+  const detailsHtml = pokemonDetailsTemplate(list);
+  pokemonDetails.innerHTML = '';
+  pokemonDetails.insertAdjacentHTML('afterbegin', detailsHtml);
+}
+```
+
+Now the error has moved to the line that says `pokemonDetails.innerHTML = '';` The error message is "'pokemonDetails' is possibly 'null'". And this is true...we have no guarentee that `pokemonDetails` will actually point to the element we want, and we have not done any sort of error checking to handle this if `null` shows up. In fact we haven't done ANY error checking. Right now our code would crash if anything went wrong. We need to handle this and other errors...what if the `url` is blank as well?
+
+
+```javascript
+async function pokeListHandler(event: Event): Promise<void> {
+  const target = event.target as HTMLElement; // Cast event.target to HTMLElement
+  const pokemonUrl = target.dataset.url; // dataset.url is now safely accessible
+
+  if (!pokemonUrl) {
+    console.error('No URL found on the target element.');
+    return;
+  }
+
+  try {
+    const list = await getData(pokemonUrl); // Assuming getData is properly typed
+    const detailsHtml = pokemonDetailsTemplate(list); // Assuming pokemonDetailsTemplate is properly typed
+    if(pokemonDetails) {
+      pokemonDetails.innerHTML = '';
+      pokemonDetails.insertAdjacentHTML('afterbegin', detailsHtml);
+    } else {
+      throw new Error('Output element not found')
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
+```
+
+A nice side effect of Typescript is that it will find potential problems like this and encourage us to address them.
+
+## **06** Fix errors: other functions
+
+You will notice that the other functions are all showing errors on their arguments as well. Fix them.
+
+>Wait a minute! You might be saying. How am I supposed to know what a `pokemon` object looks like? That comes from the API! Well, that is what [API documentation](https://pokeapi.co/docs/v2) is for.
+
+When defining the interface for the data that comes back from the API, you don't have to fully define the object. You can just define the parts we are using.
+
+<Details summary="Solution">
+```javascript
+interface PokemonSimple {
+  name: string;
+  url: string;
+}
+interface PokemonDetails {
+  id: number;
+  name: string;
+  weight: number;
+  height: number;
+  sprites: {
+    front_default: string;
+  }
+  }
+
+
+function pokemonListTemplate(item:PokemonSimple) {
+    return `<li><button data-url="${item.url}">${item.name}</button></li>`;
+}
+
+function pokemonDetailsTemplate(item:PokemonDetails) {
+    return `
+    <h2>${item.name}</h2>
+    <p>Height: ${item.height}</p>
+    <p>Weight: ${item.weight}</p>
+    <img src="${item.sprites.front_default}" alt="${item.name}">
+    `;
+    }
+
+function renderPokemonList(pokemon:PokemonSimple[]) {
+    const pokemonListHtml = pokemon.map(pokemonListTemplate).join("");
+    if(pokemonList) {
+    pokemonList.insertAdjacentHTML('afterbegin', pokemonListHtml);
+    }
+}
+
+async function getData(url:string) {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+```
+
+</Details>

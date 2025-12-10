@@ -1,0 +1,170 @@
+---
+title: Common Web Archtectures
+description: Review common web architectures including monolithic, microservices, and serverless. Consider the
+time: 1 hours
+---
+import Details from '../../components/Details.astro'
+
+## Introduction
+In this module we will review some of the common web architectures used in modern web development. Understanding these architectures will help you make informed decisions about how to structure your own web applications for performance, scalability, and maintainability.
+
+## 1. Monolithic Full-Stack Architecture
+A single codebase containing frontend, backend, and database logic.
+
+**Advantages**
+- Simple to develop and deploy.
+- Easy for small teams to maintain.
+- Shared environment reduces configuration complexity.
+
+**Disadvantages**
+- Hard to scale individual components independently.
+- Full redeploy required for any change.
+- Can become tightly coupled and difficult to refactor.
+
+**Examples**
+- Ruby on Rails  
+- Laravel (PHP) 
+- Django (Python)  
+- Express + server-rendered views (EJS, Handlebars)
+
+**Good for**
+- MVPs and early-stage startups  
+- Small teams  
+- CRUD-heavy apps with straightforward logic  
+
+---
+
+## 2. N-Tier / Layered Architecture
+Frontend (presentation layer) interacts with backend business logic, which interacts with data access layers.
+
+**Advantages**
+- Clear separation of concerns.
+- Layers can be tested independently.
+- Predictable structure widely understood in enterprise environments.
+
+**Disadvantages**
+- Boilerplate-heavy.
+- Slower iteration due to strict layer boundaries.
+- Potential performance overhead across layers.
+
+**Examples**
+- Java Spring MVC  
+- .NET MVC  
+- Node.js with explicit controller/service/repository layers  
+- PHP Symfony  
+
+**Good for**
+- Enterprise applications  
+- Large teams that need clear boundaries  
+- Apps requiring strict governance and maintainability  
+
+---
+
+## 3. Microservices + SPA / Client Architecture
+The frontend (SPA/mobile) communicates with multiple backend microservices.
+
+**Advantages**
+- Services can scale and deploy independently.
+- Technology flexibility per service.
+- Failures are isolated to individual services.
+
+**Disadvantages**
+- Complex DevOps and observability needs.
+- More challenging debugging.
+- Requires disciplined API design and strong team coordination.
+
+**Examples**
+- Frontend: React, Svelte, Vue SPAs  
+- Backend: Node.js microservices, Go services, Spring Boot services  
+- Usually deployed with Kubernetes  
+
+**Good for**
+- Large, distributed engineering teams  
+- High-scale systems (e-commerce, SaaS platforms)  
+- Apps with diverse business domains  
+
+---
+
+## 4. Serverless Full-Stack Architecture
+Frontend interacts with serverless functions acting as backend endpoints.
+
+**Advantages**
+- No server management.
+- Automatic scaling and cost-effective for sporadic workloads.
+- Easy global deployment (e.g., edge functions).
+
+**Disadvantages**
+- Cold start latency.
+- Vendor lock-in (AWS, Vercel, Cloudflare).
+- Limited runtime duration and constraints.
+
+**Examples**
+- AWS Lambda + API Gateway + static SPA  
+- Cloudflare Workers  
+- Vercel Functions + Next.js/SvelteKit  
+
+**Good for**
+- Event-driven applications  
+- Apps with variable or low traffic  
+- Teams without DevOps resources  
+
+---
+
+## 5. SSR / Hybrid Full-Stack Framework Architecture
+Frameworks that combine SSR, routing, API endpoints, and frontend hydration in one codebase.
+
+**Advantages**
+- Great SEO and performance.  
+- Unified full-stack development experience.  
+- Built-in routing, endpoints, auth, and adapters reduce boilerplate.
+
+**Disadvantages**
+- More complex build and deployment pipelines.  
+- SSR + client hydration can be tricky for beginners.  
+- Cache invalidation becomes important.
+
+**Examples**
+- SvelteKit  
+- Next.js  
+- Remix  
+- Nuxt  
+- Astro (with SSR)
+
+**Good for**
+- Apps needing SSR + SPA behavior  
+- Full-stack teams wanting a unified framework  
+- Modern web apps prioritizing performance and SEO  
+
+## 6. Static Site / SSG Architecture
+
+Pages are generated at build time into static HTML + static assets. No backend required at runtime unless you add it via serverless/API routes.
+
+**Advantages**
+- Extremely fast page loads.
+- Ultra-cheap hosting (CDN only).
+- No backend server surface → fewer security risks.
+- Ideal for SEO-heavy content and blogs.
+- Can be enhanced with client-side JS islands (Astro’s specialty).
+
+**Disadvantages**
+- Dynamic content requires rebuilding or client-side fetching.
+- Long build times for very large sites.
+- Limited full-stack features unless combined with serverless or external APIs.
+
+**Examples**
+- Astro
+- Hugo
+- Eleventy
+- Jekyll
+- Next.js / SvelteKit / Nuxt in SSG mode
+
+**Good for**
+- Marketing sites
+- Blogs/documentation
+- Lightweight dashboards powered by external APIs
+- Content sites where pages don't change often
+
+
+## **05** Submit
+
+When you have completed the task, submit a link to your branch in Github to ILearn. Also post a response to this prompt: "What was the problem you found? How did you fix it?"

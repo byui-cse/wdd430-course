@@ -1,0 +1,300 @@
+---
+title: Data Modeling for NoSQL
+description: This activity will provide practice applying the principles of data modeling for a NoSQL database.
+time: 1-2 hours
+---
+
+import Details from '../../components/Details.astro'
+
+## Introduction
+
+Modeling data for a NoSQL database can feel a bit off if you are used to modeling for relational databases. In a relational system there are very strict rules that must be followed. In a NoSQL system, the data is stored in a more flexible way and it's up to us to define how we want our data to look. Normalization, which is very important for relational databases, does not apply here. Sometimes we will intentionally de-normalize our data.
+
+In this activity you will learn about the different ways of modeling data in a NoSQL database and practice using them.
+
+
+## **01** Describe the Application
+
+If you completed the course on [data modeling](https://learn.mongodb.com/courses/introduction-to-mongodb-data-modeling) listed in the readings for this week, it recommended that you start your modeling by thinking about your application. Specifically:
+
+- What does my application do?
+- What data will I store?
+- How will users access this data?
+- What data will be the most valuable to me?
+
+By asking these questions we are trying to describe the following:
+
+	- The tasks of the developer as well as the tasks of users
+	- What your data looks like
+	- The relationships between data
+
+
+You have been introduced to the SleepOutside website which is really just a retail store. We can use that as an example for our application.
+
+Take some time to describe the SleepOutside application in these terms. After you have worked out your description, take a look at the answers below.
+
+<Details summary="Click here to see the answer">
+
+1. What does my application do?
+    - SleepOutside is an online retail store selling sleeping bags and other camping gear. It has a website where people can buy and review products online.
+    
+2. What data will I store?
+    - Product information, user information, cart information, and order information.
+3. How will users access this data?
+    - Users can log in and view their orders, or they can browse or search through products.
+4. What data will be the most valuable?
+    - The most valuable data is product information, because it can be used to make decisions about what products to sell.
+    - The most valuable data is user information, because it can be used to make decisions about who should get what products.
+    - The most valuable data is order information, because it can be used to make decisions about how much revenue we should generate.
+
+>Wait what?  How can we have three different most valuable types of data?
+> 
+>It's because each type of data is valuable in a different way and different people in a company will have their own opinion about what is most important.
+
+5. The tasks of the developer as well as the tasks of users
+    - Users should be able to search and filter products to find what they are looking for.
+    - Users should be able to see details about selected products including what other users thought about the product (reviews).
+    - Users should be able to add products to a shopping cart and then check out. The cart should persist across sessions.  
+    - Users should be able to see their order history.
+    - Users should be able to log in and log out.
+    - Users should be able to see their account information.
+    - Developers should be able to read (search) products.
+    - Developers should be able to create, read, update, and delete orders.
+    - Developers should be able to create, read, update, and delete users.
+    - Developers should be able to read, create, update, and delete alerts that will show under certain conditions to users.
+6. What your data looks like
+    - Products have a name, description, price, reviews, images, etc.
+    - Users have a username, password, a cart, and email.
+    - Orders have an order number, user id, product id, quantity, items ordered, and total cost.
+    - Alerts have a message, type (e.g., "new_product"), and condition.
+
+7. The relationships between data
+    - A product can be reviewed by many users.
+    - An order is placed by one user for many products.
+    - An alert is shown to users when certain conditions are met.
+    - A user can place many orders.
+    - A user can have one cart.
+    - A cart can have many products.
+    - A product can be in many orders.
+
+</Details>
+
+## **02** Database Design
+
+How close was your description to the instructor provided one?
+
+Take your list if it was complete enough, or add details from the solution as needed, then start thinking about the actual collections that we will need to satisfy the requirements.
+
+Once you have your list of collections, think about how they relate to each other. Then think about what the documents for each collection will look like. You have been given one of them already...`products`.  If you look at `json/backpacks.json` in your `sleepoutsideClient` folder you can see an example of what a product will look like:
+
+```javascript
+{
+    Id: "20CXG",
+    Category: "backpacks",
+    IsClearance: false,
+    IsNew: false,
+    Url: "/products/20cxg/",
+    Reviews: {
+      ReviewsUrl: "/products/20cxg/reviews/",
+      ReviewCount: 0,
+      AverageRating: 0
+    },
+    NameWithoutBrand: "Pivoter 27 L Backpack",
+    Name: "The North Face Pivoter 27 L Backpack",
+    IsFamousBrand: false,
+    Images: {
+      PrimarySmall:
+        "/images/sleepoutside/the-north-face-pivoter-27-l-backpack-in-tnf-black~p~20cxg_01~80.jpg",
+      PrimaryMedium:
+        "/images/sleepoutside/the-north-face-pivoter-27-l-backpack-in-tnf-black~p~20cxg_01~160.jpg",
+      PrimaryLarge:
+        "/images/sleepoutside/the-north-face-pivoter-27-l-backpack-in-tnf-black~p~20cxg_01~320.jpg",
+      PrimaryExtraLarge:
+        "/images/sleepoutside/the-north-face-pivoter-27-l-backpack-in-tnf-black~p~20cxg_01~600.jpg",
+      ExtraImages: [
+        {
+          Title: "Alternate View",
+          Src: "/images/sleepoutside/the-north-face-pivoter-27-l-backpack~a~20cxg_2~600.1.jpg"
+        },
+        {
+          Title: "Alternate View",
+          Src: "/images/sleepoutside/the-north-face-pivoter-27-l-backpack~a~20cxg_3~600.1.jpg"
+        },
+        {
+          Title: "Alternate View",
+          Src: "/images/sleepoutside/the-north-face-pivoter-27-l-backpack~a~20cxg_4~600.1.jpg"
+        }
+      ]
+    },
+    SizesAvailable: {},
+    Colors: [
+      {
+        ColorCode: "01",
+        ColorName: "Tnf Black",
+        ColorChipImageSrc:
+          "/images/sleepoutside/colorchip/20cxg-01.jpg",
+        ColorPreviewImageSrc:
+          "/images/sleepoutside/the-north-face-pivoter-27-l-backpack-in-tnf-black~p~20cxg_01~160.jpg"
+      }
+    ],
+    DescriptionHtmlSimple:
+      '<strong><a class="glossaryTermLink" href="/closeout~g~3281" title="Closeout: - Closeout indicates an item may be last year\'s model or color. While closeout items are often offered at discounted prices, the products themselves are always high quality. Closeout items can include anything from shoes, underwear and apparel, to rugs, tents and outdoor equipment. Closeouts are often a high percentage off the retail price.">Closeout</a></strong>. Whether you&#39;re headed to class or hiking a new trail, The North Face&#39;s Pivoter backpack provides breathable, padded comfort with room for all the goodies, including your laptop!',
+    SuggestedRetailPrice: 60,
+    Brand: {
+      Id: "1440",
+      Url: "/brand/1440/",
+      ProductsUrl: "/products?Brand=1440",
+      LogoSrc:
+        "/images/sleepoutside/brands/the-north-face~b~1440~160x100.jpg",
+      Name: "The North Face"
+    },
+    ListPrice: 39.99,
+    FinalPrice: 39.99
+  },
+    ```
+
+When representing related data in NoSQL we have two options. Embed the information, or link to it. Note that there was a decision made to not embed the product reviews, and yet the images were embedded. Why do you think that is? Record your thoughts about these decisions.
+
+Here are a few other things to consider:
+- What information do we need about a User? You should generally try and store the minimum necessary, but make sure you have enough to do what you need...ie complete an Order.
+- Do we need a CartItems collection or should that just live inside of a User?
+- Should a CartItem just be a copy of an entire Product? or should we only store productId and join with the Product collection when we need the rest of the details? Do we need to know everything about a product for the cart?
+- Similar thoughts about an Order. How much information do we need about a Product in an Order document to be able to successfully process an order?
+- If we decide that the Product in the cart does not need contain all of the product info, does it need a similar set of information as an Order? Could the cart and order share a schema?
+- If we store Product details in the Products, Users, and Orders collections that seems like a lot of duplicated information. Is that OK?
+
+Create document schemas for the other collections in your list.  I recommend starting by creating a text file outlining the following bits of information about each document in the collection:
+
+- the name of the field
+- the type of data it should contain
+- whether or not it is required
+- whether or not it is unique
+- any restrictions on length
+- a description of the field explaining it's purpose and giving hints about what makes it valid or invalid.
+
+For example for the alerts collection these notes would look like this:
+
+```text
+Alert: 
+_id: 
+    string,
+    required
+title:
+    string,
+    required,
+    description: "The title of the alert, must not be blank"
+type:
+    string,
+    required,
+    enum: ["warning", "info", "promotion"],
+    description: "The type of the alert, must be one of: warning, info, promotion"
+status:
+    string,
+    required,
+    enum: ["active", "inactive"]
+    description: "The status of the alert, must be one of: active or inactive"
+createdAt:
+    date,
+    required
+modifiedAt:
+    date,
+    required
+```
+
+>Why `_id` instead of just `id`? This is a MongoDB thing. It wants the primary identifier of the document to always be `_id`.
+>
+>For the Products collection we have been given existing data that already has an `id` field. When we import that into Mongo it will create an additional `_id`
+
+Notice that we have just written these as formatted text without paying too much attention to a specific format. We are just trying to get the information down in a quick and easy way so that we can use it later. Ultimately we will need this information in three different formats:
+
+- a Typescript interface
+- a [JSON Schema](https://json-schema.org/learn/getting-started-step-by-step) that we will use for validation of our data later
+- and as an [OpenAPI specification](https://swagger.io/docs/specification/about/) that we will use for documentation of our API.
+
+We will produce the first two in this activity, the last will wait until later. Turns out that AI is very good at re-formatting information. Open up your favorite AI tool and paste in the definition for an Alert above along with instructions to convert it into the JSON Schema format. Then ask AI to produce a Typescript Interface.
+You should get something like this:
+
+```javascript
+// JSON Schema
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Alert",
+  "description": "Schema for Alert object",
+  "type": "object",
+  "required": [
+    "_id",
+    "title",
+    "type",
+    "status",
+    "createdAt",
+    "modifiedAt"
+  ],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "Unique identifier for the alert"
+    },
+    "title": {
+      "type": "string",
+      "description": "The title of the alert, must not be blank"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "warning",
+        "info",
+        "promotion"
+      ],
+      "description": "The type of the alert, must be one of: warning, info, promotion"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "description": "The status of the alert, must be one of: active or inactive"
+    },
+    "createdAt": {
+      "type": "date",
+      "format": "date-time"
+    },
+    "modifiedAt": {
+      "type": "date",
+      "format": "date-time"
+    }
+  }
+}
+```
+```javascript
+// TypeScript Interface
+interface Alert {
+  _id: string;
+  title: string;
+  type: 'warning' | 'info' | 'promotion';
+  status: 'active' | 'inactive';
+  createdAt: Date;
+  modifiedAt: Date;
+}
+```
+
+Do this for the rest of the collections. You will probably have better luck if you do them one at a time.
+
+>Make sure to look over the results from the AI. It doesn't always get things right...for example it might decide to add `"required": true` to properties. This is not valid JSON Schema. Instead all the required fields should be gathered into one `required:[]` array. You may need to tweak your prompt until it gets it right.
+
+
+## **03** Turn in your schema.
+
+Submit your list of collections with the JSON schema and Typescript Interface for each to ILearn. Add your schemas to a file called `schemas.mjs`. You may need to create variables for each depending on how the AI gave you the results. Create another file called `types.mts` and put all the Typescript Interfaces in there.  Submit both files.
+
+Make sure that all the functionality listed above can be met, and that the relationships are all modeled correctly. The number of collections you end up with can vary depending on how you decide to structure things. 
+
+Submit also your thoughts about how you decided to implement the relationships in your model.
+
+As you consider this keep in mind the following schema anti-patterns:
+
+- Massive Arrays (unbounded documents)
+- Massive numbers of collections
+- Bloated Documents
+- Data that is accessed together but stored in different collections
+

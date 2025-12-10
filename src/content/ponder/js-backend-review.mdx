@@ -1,0 +1,182 @@
+---
+title: Javascript Node/Express Review
+description: This activity will review core concepts in Backend Javascript that you need to succeed.
+time: 1 hours
+---
+
+## Introduction
+While we will be writing JavaScript for the dynamic elements of our Frontend, and for the functionality of the backend...there are some differences. It would be good to review a few ideas from CSE 340 about Node and Express as well.
+
+## **01** Setup a new Node server.
+
+To begin do the following:
+
+1. Create a new node project ((p)npm init)
+2. Install express and nodemon with npm or pnpm. ((p)npm i express nodemon)
+3. Create a file to serve as our application entrypoint. (server.js)
+4. Setup some scripts to be able to easily run our application with nodemon. (remember to add "type": "module" as well so we can use ESModules)
+5. Using express start up a web server listening on port 3000
+6. Create a route to the webroot (/) that just returns a simple message.
+7. Run your server and test your route.
+
+import Details from '../../components/Details.astro'
+
+<Details summary="server.js">
+```javascript
+import express from "express";
+
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});
+```
+</Details>
+
+## **02** request/response cycle
+
+Turn to a neighbor and discuss the following: "What is request/response cycle in Node?" If you need some help getting the discussion going, here is what I got when I asked ChatGPT that question
+
+>If you are online and don't have a neighbor handy you can have AI explain it to you, then you can explain it back in your own words...or you could give an example of use and ask "Is this a good example?"
+
+<Details summary="AI response about request/response">
+
+The request/response cycle in Node.js refers to the flow of HTTP requests and responses between the client (usually a web browser) and a server (running a Node.js application). This cycle is a fundamental concept in web development, especially when working with server-side technologies like Node.js.
+
+Here’s how the cycle works:
+
+1. Request:
+The cycle begins when a client (e.g., a browser, mobile app) sends an HTTP request to a Node.js server. This request could be for data (**get** request), to create or update resources (**post**, **put** request), or to delete something (**delete** request).
+The HTTP request typically contains:
+    - URL: The resource the client is requesting (e.g., /home).
+    - HTTP Method: Indicates the type of request (**get**, **post**, **put**, **delete**, etc.).
+    - Headers: Metadata about the request (e.g., content type, authentication).
+    - Body: Data sent with the request (used in **post**, **put** requests).
+2. Processing the Request:
+When the server receives the request, the Node.js application processes it. Typically, this involves:
+    - Routing: Determining which code or function should handle the request based on the URL and HTTP method. For example, if the request is for `/home`, the server may have a handler for that URL.
+    - Middleware: Before reaching the route handler, the request might pass through middleware functions. These are used for logging, validation, authentication, parsing request bodies, etc.
+    - Business Logic: The server performs any necessary logic, like querying a database or processing data.
+3. Response:
+After processing the request, the Node.js server generates an HTTP response. The response contains:
+    - Status Code: A number indicating the result of the request (e.g., `200 OK` for success, `404 Not Found` for missing resource).
+    - Headers: Metadata about the response (e.g., content type, caching policies).
+    - Body: The data that the server sends back to the client (e.g., HTML content, JSON data, or images).
+4. Client Receives the Response:
+Finally, the client receives the response. Depending on the content type, the client will render the data (e.g., display HTML on a webpage, show an image, or process JSON for further actions).
+
+### Example Flow:
+1. Client Request: The user enters http://localhost:3000/about in their browser.
+2. Server: Node.js receives the request and matches it to a route handler, e.g., for the **get** /about route.
+3. Processing: The server may run some logic, like fetching data from a database or processing the request.
+4. Server Response: The server sends an HTML page (or JSON, depending on the request) back with a 200 OK status code.
+5. Client: The browser displays the content returned by the server.
+</Details>
+
+## **03** Routes
+
+An express server only responds to routes that have been explictly defined. For example in the simple server we setup earlier we defined a root route:
+
+```Javascript
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+```
+
+This reads: "Watch for a `get` request to `/`  Return the string 'Hello world' when you receive it." What if we wanted another route? Maybe to get information about users. It might look like this:
+
+```Javascript
+app.get("/users", (req, res) => {
+  res.send("Hello User route!");
+});
+```
+
+Now we can make a request to `http://localhost:3000/users`.  Sometimes it is nice to send additional information through the URL as part of our request. This can take two forms: `params` and `URL search strings`  For example it would be common if looking for user with the id of "1" to use this URL: `/users?id=1` This is an example of sending a URL search parameter. We don't need to make any changes to our route for this to work.
+
+Another common form would leave out the explicit "id" key and might look like this instead: `/users/1` This would be an example of a express parameter. In both cases the sent information can be found on the `request` object. We will look at that closer in the next step. For the Express parameter to work we will need to make a change to our route:
+
+```Javascript
+app.get("/users/:id", (req, res) => {
+  res.send("Hello User route!");
+});
+```
+
+`get` requests are the most common type of request, but what if a user was filling out and submitting a form? This would usually come as a `post` request and must be handled if we want to allow it. It would look like this:
+
+```Javascript
+app.post("/users", (req, res) => {
+  res.send("Hello User route!");
+});
+```
+
+We would expect some data to come with this request. It will again be found in the `request` object. In `req.body`. We would also need to know what type of data was sent. Is it `json` or `FormData` for example? Again we can look to the `request` object. Are you sensing a pattern?
+
+## **04** HTTP Headers and the request object
+
+The web browser packages up all sorts of useful information when it makes a request to a server. It sends this information in the form of `headers`. We can see this information on the server in the `request` object.
+
+Here are some useful questions that can be answered by looking at the header of a request:
+- What is the type of content being requested?
+- Is the request secure (HTTPS)?
+- What is the client's language and timezone?
+- What type of content is the client expecting to receive?
+- What type of content is being sent by the client?
+- What is the client's user-agent?
+- Is the client authenticated?
+- What is the referring URL (where is the client coming from)?
+- Is the request coming from a mobile device or desktop?
+
+Other important bits of information that are not necessarily part of the `header` but are part of the `request` are:
+- `body`: The data sent with the request.
+- `params`: The data sent as part of the URL.
+- `query`: The data sent as part of the URL search string.
+- `method`: The type of request (**get**, **post**, **put**, **delete**, etc.)
+- `url`: The URL of the request.
+- `ip`: The IP address of the client.
+- `cookies`: Any cookies sent with the request.
+
+Modify the get user route we made above, add some logs to see if you can identify where in the `request` object this information can be found. Use the following for your URL: `localhost:3000/users/1?some=param`
+
+## **05** Middleware
+
+Middleware in web development (especially in Node.js) refers to a function or set of functions that sit in the request/response cycle and can modify the request and/or response objects, execute code, and call the next middleware function in the stack. They are usually used to add functionality, such as logging, authentication, or data parsing, to the request-response cycle without modifying the core application logic.
+
+In simpler terms, middleware acts as a bridge between the incoming request and the final response, allowing you to perform operations at different stages of the cycle.
+
+Middleware is really just a function that has access to the request object (req), the response object (res), the next middleware function in the application’s request-response cycle and is called with (almost) every request.
+
+Here are two examples of common types of middleware:
+
+```javascript
+// Middleware that logs request information
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();  // Pass control to next middleware
+});
+ 
+// Authentication middleware
+app.use((req, res, next) => {
+    if (req.session.user) {
+        next();  // User is authenticated, continue
+    } else {
+        res.redirect('/login');  // Stop here, redirect to login
+    }
+})
+```
+
+Notice that each has the request, the response, and the next function in the chain.
+
+## **06** The Response
+
+After the request has come in, gone through any middleware and the function controlling the route requested, Express will always put together a response that will get sent back to the requestor.
+
+This response will contain much of the information from the request, plus, hopefully, the stuff that it made the request for! This 'stuff' could be an HTML file, a snippet of HTML, the results of a form submission, or some data retrieved from a database.
+
+We saw earlier a simple text response: `res.send("message")`. If we wanted to send back an entire HTML file we have `res.sendFile(path)` 
+
+Often for this class we will be sending a response of JSON. `res.json({ userId: req.params.id, message: "Hello User route!" });`
+

@@ -1,0 +1,300 @@
+Product:
+_id: 
+    string,
+id:
+    string,
+    required
+isClearance:
+        boolean,
+category:
+    string,
+    required,
+    enum: [tents, backpacks, sleeping-bags, hammocks]
+    description: "category of the product, should not be blank and should be either tents, backpacks, sleeping-bags or hammocks"
+isNew:
+    boolean,
+url:
+    string,
+reviews:
+    object
+    {
+        reviewsUrl:
+            string,
+        reviewCount:
+            number,
+        averageRating:
+            number
+    },
+nameWithoutBrand:
+    string,
+    required,
+    description: "name of the product without the brand, should be a string and cannot be blank"
+name:
+    string,
+    required,
+    description: "name of the product, including the brand, should be a string and cannot be blank"
+images:
+    object
+    {
+    primarySmall:
+        string,
+    primaryMedium:
+            string,
+    primaryLarge:
+            string,
+    primaryExtraLarge:
+        string,
+    extraImages:
+        array,
+        items:
+            object
+            {
+                title:
+                    string,
+                src:
+                    string
+            },
+    },
+sizesAvailable:
+    object
+    {
+        zipper:
+            array,
+            items:
+                string,
+        size: 
+            array,
+            items:
+                string,
+        },
+    },
+colors:
+    array,
+    items:
+        colorCode: string;
+        colorName: string;
+        colorChipImageSrc: string;
+        colorPreviewImageSrc: string;
+    description: "If a product has different color options then they should be listed here as an array of objects with colorCode, colorName, colorChipImageSrc, and colorPreviewImageSrc properties."
+descriptionHtmlSimple
+    string,
+    required
+    description: "descriptionHtmlSimple provides a detailed description of the product as a string and cannot be blank"
+  suggestedRetailPrice:
+    number,
+    required
+    description: "Suggested Price from the manufacturer."
+brand: 
+    object,
+    required,
+    items:
+        id: string;
+        url: string;
+        productsUrl: string;
+        logoSrc: string;
+        name: string;
+listPrice: 
+    number,
+    required
+    description: "List Price from the manufacturer."
+finalPrice: 
+    number,
+    required
+    description: "Final Price of the product after any discounts or promotions have been applied. This should be a number and cannot be blank"
+
+
+User:
+_id: 
+    string,
+    required
+email:
+    string,
+    required,
+    unique,
+    format: email,
+    description: "The email address of the user, must not be blank and must be a valid email address"
+password:
+    string,
+    required,
+    minLength: 6,
+    maxLength: 100,
+    description: "The password of the user, must be at least six characters long and no more than one hundred characters long"
+name:
+    string,
+    required,
+    minLength: 2,
+    maxLength: 50,
+    description: "The name of the user, must be at least two characters long and no more than 50 characters long"
+address:
+    object,
+    street:
+        string,
+        required,
+        minLength: 10,
+        maxLength: 100,
+        description: "The street address of the user, must not be blank and must be at least ten characters long and no more than one hundred characters long"
+    city:
+        string,
+        required,
+        minLength: 5,
+        maxLength: 50,
+        description: "The city of the user, must not be blank and must be at least five characters long and no more than fifty characters long"
+    state:
+        string,
+        required,
+        minLength: 2,
+        maxLength: 3,
+        enum: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"],
+        description: "The state of the user, must not be blank and must be one of the following states: AL, AK, AZ, AR, CA, CO, CT, DE, DC, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD, MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI, SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY"
+    zipCode:
+        string,
+        required,
+        minLength: 5,
+        maxLength: 10,
+        pattern: "^\\d{5}(-\\d{4})?$",
+        description: "The zip code of the user, must not be blank and must be a valid zip code"
+    country:
+        string,
+        required,
+        minLength: 2,
+        maxLength: 30,
+        pattern: "^\\w+$",
+        description: "The country of the user, must not be blank and must be a valid country"
+phoneNumbers:
+    array,
+    items:
+        {
+            type: string,
+            number: string
+        },
+    description: "The phone numbers of the user, must be a valid phone number"
+cart:
+    array,
+    items:
+        {
+            productId: string;
+            productName: string;
+            price: number;
+            finalPrice: number;
+            productImageSrc: string;
+            productUrl: string;
+            productCategory: string;
+            productColor: Color;
+            productSize: string;
+        }
+   description: "The cart items of the user, can be blank and must be a valid cart item"
+createdAt:
+    date,
+    required
+modifiedAt:
+    date,
+    required  
+
+Order:
+_id:
+    string,
+    required
+userId:
+    string,
+    required
+    description: "The id of the user who placed the order, cannot be blank"
+status:
+    "pending" | "processing" | "shipped" | "delivered",
+    required
+paymentMethod:
+    string,
+    required
+shippingAddress:
+    object,
+    street:
+        string,
+        required,
+        minLength: 10,
+        maxLength: 100,
+        description: "The street address of the user, must not be blank and must be at least ten characters long and no more than one hundred characters long"
+    city:
+        string,
+        required,
+        minLength: 5,
+        maxLength: 50,
+        description: "The city of the user, must not be blank and must be at least five characters long and no more than fifty characters long"
+    state:
+        string,
+        required,
+        minLength: 2,
+        maxLength: 3,
+        enum: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"],
+        description: "The state of the user, must not be blank and must be one of the following states: AL, AK, AZ, AR, CA, CO, CT, DE, DC, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD, MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI, SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY"
+    zipCode:
+        string,
+        required,
+        minLength: 5,
+        maxLength: 10,
+        pattern: "^\\d{5}(-\\d{4})?$",
+        description: "The zip code of the user, must not be blank and must be a valid zip code"
+    country:
+        string,
+        required,
+        minLength: 2,
+        maxLength: 30,
+        pattern: "^\\w+$",
+        description: "The country of the user, must not be blank and must be a valid country"
+    required
+orderItems:
+    array,
+    items:
+        {
+            productId: string;
+            productName: string;
+            price: number;
+            finalPrice: number;
+            productImageSrc: string;
+            productUrl: string;
+            productCategory: string;
+            productColor: Color;
+            productSize: string;
+        }
+    description: "The ordered items, can not blank and must be a valid cart item"
+    required
+createdAt:
+    date,
+    required
+modifiedAt:
+    date,
+    required
+totalPrice:
+    number,
+    required
+shippingCost:
+    number,
+    required
+taxAmount:
+    number,
+    required
+  
+
+Alert: 
+_id: 
+    string,
+    required
+title:
+    string,
+    required,
+    description: "The title of the alert, must not be blank"
+type:
+    string,
+    required,
+    enum: ["warning", "info", "promotion"],
+    description: "The type of the alert, must be one of: warning, info, promotion"
+status:
+    string,
+    required,
+    enum: ["active", "inactive"]
+    description: "The status of the alert, must be one of: active or inactive"
+createdAt:
+    date,
+    required
+modifiedAt:
+    date,
+    required
+    

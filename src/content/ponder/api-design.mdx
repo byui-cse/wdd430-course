@@ -1,0 +1,227 @@
+---
+title: API design and Documentation
+description: This activity will provide practice applying the principles of API design and using the OpenAPI standard.
+tags:
+  - api-design
+  - openapi
+time: 1-2 hours
+---
+
+import Details from '../../components/Details.astro'
+
+## Introduction
+
+Last week we spent time designing a data model for our retail application. In this activity, you will design an API that can be used to interact with the data in your database. We will also produce documentation for the API.
+
+
+## **01** Review
+
+Last week we made a list of tasks that the users and dvelopers of our application would need to do. It looked something like this:
+
+- Users should be able to search and filter products to find what they are looking for.
+- Users should be able to see details about selected products including what other users thought about the product (reviews).
+- Users should be able to add products to a shopping cart and then check out. The cart should persist across sessions.  
+- Users should be able to see their order history.
+- Users should be able to log in and log out.
+- Users should be able to see their account information.
+- Developers should be able to read (search) products.
+- Developers should be able to create, read, update, and delete orders.
+- Developers should be able to create, read, update, and delete users.
+- Developers should be able to read, create, update, and delete alerts that will show under certain conditions to users.
+
+This list will describe the core of the API that we need to design and build. We also spent time defining what all our documents will look like. 
+
+We will be building an HTTP data API, that is somewhat RESTful. This means that it should follow a few basic rules. The rules below were taken from the [REST API tutorial](https://restapitutorial.com/introduction/restquicktips)
+
+- Use identifiers in your URLs instead of in the query-string. Using URL query-string parameters is fantastic for filtering, but not for resource names.
+    Good: /users/12345
+    Poor: /api?type=user&id=23
+- Leverage the hierarchical nature of the URL to imply structure.
+- Design for your clients, not for your data.
+- Resource names should be nouns. Avoid verbs as resource names, to improve clarity. Use the HTTP methods to specify the verb portion of the request.
+- Use plurals in URL segments to keep your API URIs consistent across all HTTP methods, using the collection metaphor.
+    Recommended: /customers/33245/orders/8769/lineitems/1
+    Not: /customer/33245/order/8769/lineitem/1
+- Avoid using collection verbiage in URLs. For example `customer_list` as a resource. Use pluralization to indicate the collection metaphor (e.g. customers vs. customer_list).
+- Use lower-case in URL segments, separating words with underscores (`_`) or hyphens (`-`). Some servers ignore case so it’s best to be clear.
+- Keep URLs as short as possible, with as few segments as makes sense.
+- It should use a standard HTTP status code to describe the result of the action.
+- Each resource should be identified by a unique URI (Uniform Resource Identifier).
+
+## **02** API Design
+
+Using the information provided above, design an API for your application. For this step we will produce a list of endpoints that can be used to interact with our data model. For example we might have an endpoint like `/products` which returns all products in the database. We could represent that as: `GET /products`. We will also need to get a single product: `GET /products/{id}`. In fact we already have simple implementations of those endpoints in our server.
+
+Another task we will need to do is to filter products. Our site will have a page for each category of product. What would the endpoint look like for that? Or other times a user will want to search with a string for certain products. How might you represent that? In addition, what if hundreds of products match our search? Pagination is very common in APIS. In fact if we take a look at [Zalando API docs](https://opensource.zalando.com/restful-api-guidelines/#137), we can see that there are some recommended query parameters to use. `limit` and `offset` are included among those. Take a look at `fields` as well. Could that be useful? Let's implement that as well.
+
+>What should our responses look like on resources that are paginated? We should send the page information with each request. For an example of one way this can be handled visit this url: [https://pokeapi.co/api/v2/pokemon/](https://pokeapi.co/api/v2/pokemon/). What do you think?
+
+
+<Details summary="Search products">
+
+```bash
+GET /products?category={category_id}
+for general searching
+GET /products/search?q={search_string}
+or
+GET /products?q=shoes&limit=20&offset=20
+```
+</Details>
+
+Complete your list of endpoints. One last thing to think about: how should we handle the login endpoint? Should it stand on it's own: `GET /login` or should it be part of the `POST /users/login` endpoint? Should it be a `GET` or `POST` request?
+
+## **03** OpenAPI documentation
+
+We will be using [OpenAPI](https://swagger.io/) to document our API. This is a standard way of documenting an API and it's supported by many tools. We can use the online tool [Swagger Editor](https://editor.swagger.io/) to create our API definition.
+
+If you visit the link above to the Swagger editor...it will open with a sample project. Check out the code in the editor...it's a little overwhelming. You actually need to have thought out most of the details for your API before you can make good documentation for it. We are actually further along than you might think. We have defined the endpoints in the step above, and we defined the schema for the data that will be returned in the previous assignment.
+
+We could take those things and start creating our API definition by hand, but it's not necessary. We can actually leverage generative AI. It is really good at tasks like this. The trick is going to be forming a prompt with enough detail to get it right.
+
+Here is a list of the information we will need to feed to the AI for it to make a good API definition:
+- The endpoints we defined in the previous step
+- The schema we defined in the data modeling activity.
+- The HTTP methods for each endpoint
+- Whether the endpoint should be protected or not
+- The request and response bodies for each endpoint and for each status code we define (Start with 200, 400, 401, 403, 404, 500) Not every endpoint will respond with every status code. For example we want everyone to always be able to see the products (the endpoint is not protected), and so a 401 or 403 response should never happen on `GET /products`. But we definately don't want everyone to see the user data. So a 401 or 403 
+
+For now we will not generate all of the API endpoints. In addition to the `GET /products` and `GET /products/{id}` endpoint, we will need to define the endpoints required for Alerts. 
+
+Here is an example prompt that you can use as a starting point:
+```bash
+Write an OpenAPI 3.0 specification in valid yaml for the following API endpoints:
+products API endpoints:
+GET /products/{id}
+GET /products/
+
+The JSON schema for the data returned by the products endpoints is:
+{
+  type: 'object',
+  properties: {
+    _id: { type: 'string' },
+    id: { type: 'string' },
+    isClearance: { type: 'boolean' },
+    category: {
+      type: 'string',
+      enum: ['tents', 'backpacks', 'sleeping-bags', 'hammocks'],
+      description: 'Category of the product, should not be blank and should be either tents, backpacks, sleeping-bags or hammocks'
+    },
+    isNew: { type: 'boolean' },
+    url: { type: 'string' },
+    reviews: {
+      type: 'object',
+      properties: {
+        reviewsUrl: { type: 'string' },
+        reviewCount: { type: 'number' },
+        averageRating: { type: 'number' }
+      }
+    },
+    nameWithoutBrand: {
+      type: 'string',
+      description: 'Name of the product without the brand, should be a string and cannot be blank'
+    },
+    name: {
+      type: 'string',
+      description: 'Name of the product, including the brand, should be a string and cannot be blank'
+    },
+    images: {
+      type: 'object',
+      properties: {
+        primarySmall: { type: 'string' },
+        primaryMedium: { type: 'string' },
+        primaryLarge: { type: 'string' },
+        primaryExtraLarge: { type: 'string' },
+        extraImages: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              title: { type: 'string' },
+              src: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    sizesAvailable: {
+      type: 'object',
+      properties: {
+        zipper: {
+          type: 'array',
+          items: { type: 'string' }
+        },
+        size: {
+          type: 'array',
+          items: { type: 'string' }
+        }
+      }
+    },
+    colors: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          colorCode: { type: 'string' },
+          colorName: { type: 'string' },
+          colorChipImageSrc: { type: 'string' },
+          colorPreviewImageSrc: { type: 'string' }
+        }
+      },
+      description: 'If a product has different color options then they should be listed here as an array of objects with colorCode, colorName, colorChipImageSrc, and colorPreviewImageSrc properties.'
+    },
+    descriptionHtmlSimple: {
+      type: 'string',
+      description: 'Description of the product as a string and cannot be blank'
+    },
+    suggestedRetailPrice: { type: 'number', description: 'Suggested Price from the manufacturer' },
+    brand: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        url: { type: 'string' },
+        productsUrl: { type: 'string' },
+        logoSrc: { type: 'string' },
+        name: { type: 'string' }
+      }
+    },
+    listPrice: { type: 'number', description: 'List Price from the manufacturer' },
+    finalPrice: { type: 'number', description: 'Final Price of the product after any discounts or promotions have been applied. This should be a number and cannot be blank' }
+  }
+};
+
+For GET /products/{id}, the request body is empty. The response body is the schema defined above.
+For GET /products, the request body is empty
+it allows the following url parameters:
+{
+    "q": string,
+    "category": string,
+    "fields": string[],
+    "limit": number,
+    "offset": number
+}
+The fields property is an array of strings that specify which fields to include in the response for each product. For example, if you set fields=["Name", "FinalPrice"], then the response will only contain the name and price properties for each product.
+The 200 response body should be the products in JSON format with the schema defined above. The 404 response should have a message of "Product not found". The 400 response should contain details about what part of the request was wrong ,500 error code as appropriate
+Any GET request to an endpoint without an identifier should wrap the requested data in an object like this:
+{
+  "count":number,"next":string|null,"previous":string|null,"results":[]
+}
+where count is the total number of results, next is a url to the next page, prev is a url to the previous page, and results is an array of objects that represent each results, each object should have the schema defined above this endpoint will only respond with 200, 400, and 500 codes.
+```
+
+Once you have something generated...go to the [swagger editor](https://editor.swagger.io) and paste your specs in to see how it looks. Keep tweaking until you get something you are happy with.
+
+>How do you know if you should be happy with your results?
+> Here are some things to look for:
+>- Are all the endpoints you defined in the previous step included?
+>- Do the request and response bodies look correct?
+>- Are the status codes appropriate for each endpoint?
+>- Are the schemas for the data correct?
+>
+> Basically does it answer the questions a developer would have about how to use your API?
+>- How can I get one product?
+>- How can I search for products?
+>- What will the data I get back look like when I search for products?
+>- What are the possible error codes I might get back?
+>- Do the error codes adequately describe the problem?
+
+Turn in your `openapi.yaml` file along with a screenshot of the swagger editor showing your API design.
