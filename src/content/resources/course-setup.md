@@ -34,4 +34,3 @@ time: 20min
     Remember that everyone should be in Microsoft Teams now as well...you could post a message there: 'Looking for team.'
 
     If you would like a private channel for your team in Microsoft Teams, let the instructor know in your email.
-

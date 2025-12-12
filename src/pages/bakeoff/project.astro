@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProjectDetails from "../../components/bakeoff/ProjectDetails.svelte";
+import Login from "../../components/bakeoff/Login.svelte";
+---
+
+<BaseLayout>
+  <h2>Project Bakeoff Reporting</h2>
+  <Login client:load>
+    <ProjectDetails client:only />
+  </Login>
+</BaseLayout>
