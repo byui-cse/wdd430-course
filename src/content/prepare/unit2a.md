@@ -1,6 +1,6 @@
 ---
 title: Week 3 Exploration.
-
+aiUsage: green
 time: 90min
 ---
 

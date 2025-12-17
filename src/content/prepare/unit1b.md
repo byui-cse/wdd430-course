@@ -1,6 +1,7 @@
 ---
 title: Week 2 Exploration
 time: 90min
+aiUsage: green
 ---
 
 > ### Tips

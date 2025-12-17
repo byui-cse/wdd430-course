@@ -1,6 +1,7 @@
 ---
 title: Week 1 Exploration.
 time: 60-90min
+aiUsage: green
 ---
 
 > ### Tips

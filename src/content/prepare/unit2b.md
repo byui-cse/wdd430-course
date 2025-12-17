@@ -1,6 +1,7 @@
 ---
 title: Exploration.
 time: 90min
+aiUsage: green
 ---
 
 ## Topics

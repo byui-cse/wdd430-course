@@ -1,102 +1,95 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import BaseHead from "../components/BaseHead.astro";
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
-import FormattedDate from "../components/FormattedDate.astro";
+import BaseLayout from "./BaseLayout.astro";
+import AIUsage from "../components/AIUsage.astro";
 
 type Props = CollectionEntry<"prepare">["data"];
 
-const { title, description, time } = Astro.props;
+const { title, description, aiUsage, time } = Astro.props;
 ---
 
-<html lang="en">
-  <head>
-    <BaseHead title={title} description="Prepare activity for WDD 360 " />
-    <style>
-      main {
-        width: calc(100% - 2em);
-        max-width: 100%;
-        margin: 0;
-      }
-      .hero-image {
-        width: 100%;
-      }
-      .hero-image img {
-        display: block;
-        margin: 0 auto;
-        border-radius: 12px;
-        box-shadow: var(--box-shadow);
-      }
-      .prose {
-        width: 720px;
-        max-width: calc(100% - 2em);
-        margin: auto;
-        padding: 1em;
-        color: rgb(var(--gray-dark));
-      }
-      .title {
-        margin-bottom: 1em;
-        padding: 1em 0;
-        text-align: center;
-        line-height: 1;
-      }
-      .title h1 {
-        margin: 0 0 0.5em 0;
-      }
-      .date {
-        margin-bottom: 0.5em;
-        color: rgb(var(--gray));
-      }
-      .last-updated-on {
-        font-style: italic;
-      }
-    </style>
-  </head>
+<BaseLayout
+  title={title}
+  description={description || "Prepare activity for WDD 360 "}
+>
+  <style>
+    main {
+      width: calc(100% - 2em);
+      max-width: 100%;
+      margin: 0;
+    }
+    .hero-image {
+      width: 100%;
+    }
+    .hero-image img {
+      display: block;
+      margin: 0 auto;
+      border-radius: 12px;
+      box-shadow: var(--box-shadow);
+    }
+    .prose {
+      width: 720px;
+      max-width: calc(100% - 2em);
+      margin: auto;
+      padding: 1em;
+      color: rgb(var(--gray-dark));
+    }
+    .title {
+      margin-bottom: 1em;
+      padding: 1em 0;
+      text-align: center;
+      line-height: 1;
+    }
+    .title h1 {
+      margin: 0 0 0.5em 0;
+    }
+    .date {
+      margin-bottom: 0.5em;
+      color: rgb(var(--gray));
+    }
+    .last-updated-on {
+      font-style: italic;
+    }
+  </style>
 
-  <body>
-    <Header />
-    <main>
-      <article class="container prose">
-        <h1>{title}</h1>
-        <hr />
-        <h2>Activity Instructions</h2>
-        <p>Estimated Time: {time}</p>
-        <hr />
+  <article class="container prose">
+    <h1>{title}</h1>
+    <hr />
+    <AIUsage level={aiUsage} />
+    <h2>Activity Instructions</h2>
+    <p>Estimated Time: {time}</p>
+    <hr />
 
-        <p>
-          As you begin with this first preparation activity for the course, it
-          is crucial that you understand the importance of preparation. Do not
-          treat these activities as a task to check off in as little time as
-          possible. Instead always treat them as opportunities to learn.
-        </p>
+    <p>
+      As you begin with this first preparation activity for the course, it is
+      crucial that you understand the importance of preparation. Do not treat
+      these activities as a task to check off in as little time as possible.
+      Instead always treat them as opportunities to learn.
+    </p>
 
-        <p>
-          Throughout the semester your instructor will assume that you know and
-          understand the concepts from the Prepare activities...<em
-            >unless you tell them differently!</em
-          >
-        </p>
+    <p>
+      Throughout the semester your instructor will assume that you know and
+      understand the concepts from the Prepare activities...<em
+        >unless you tell them differently!</em
+      >
+    </p>
 
-        <p>
-          The other activities and discussions will be designed to move beyond
-          the readings...give examples and use cases, talk about potential
-          problems, etc. Because of this, it is extremely important that you ask
-          for clarification on parts of the readings that didn't make sense.
-          Your instructor is happy to talk about them...but will assume
-          everything is good unless you ask.
-        </p>
-        <div>
-          <slot />
-        </div>
-        <h2>Submission</h2>
+    <p>
+      The other activities and discussions will be designed to move beyond the
+      readings...give examples and use cases, talk about potential problems,
+      etc. Because of this, it is extremely important that you ask for
+      clarification on parts of the readings that didn't make sense. Your
+      instructor is happy to talk about them...but will assume everything is
+      good unless you ask.
+    </p>
+    <div>
+      <slot />
+    </div>
+    <h2>Submission</h2>
 
-        <p>
-          Submit your notes from the readings, including any questions you have
-          about the material.
-        </p>
-      </article>
-    </main>
-    <Footer />
-  </body>
-</html>
+    <p>
+      Submit your notes from the readings, including any questions you have
+      about the material.
+    </p>
+  </article>
+</BaseLayout>
