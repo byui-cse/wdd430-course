@@ -34,11 +34,11 @@ Your team should use Github to manage your code. You will create the first share
 3. Discuss how you would like to work together. Will you use a peer programming model or work more independently?
 4. Finally discuss what potential issues might arise in the team and discuss ways of addressing those concerns.
 
-## **03** Brainstorm
+## **03** Select a Project
 
-Starting in week 9 we will begin working on a project of the team's choosing. To help prepare for that make a list of at least 15 ideas for a web application. The sky is the limit as you make this list. Put anything that comes to mind that sounds interesting. Feel free to leverage generative AI if you are struggling to come up with ideas.
+Starting in week 9 we will begin working on a project of the team's choosing. Each member of the class was required to produce a project specification for an idea. Choose one of these ideas for the entire team to finish over the rest of the semester.
 
-Once you have the initial list it is time to narrow it down. As you review your list keep the following in mind:
+As you consider the list of projects keep the following in mind:
 
 1. Your interests and passions
 2. The requirements of the project
@@ -49,14 +49,12 @@ Once you have the initial list it is time to narrow it down. As you review your 
 7. Data/API availability
 8. Complexity of the project
 
-From now until week 9 you should continue negotiating with your partners to remove ideas until there is one left. This is the idea you will prepare a proposal for. 
-
-> If you get up to 7-8 ideas and find one that the entire team is really excited about...you can probably stop generating ideas :)
+Next week we will review the results of the bakeoffs and pick a stack to build the project in. This week we are only picking the project idea.
 
 ## Submission
 
 Submit the following in Ilearn:
 
 1. The names of the team members (you can give a team name as well if you would like)
-2. A list of the 15 ideas for a web application.
+2. The project idea you have chosen.
 3. A brief description of how you plan to work together as a team including your communication plan.

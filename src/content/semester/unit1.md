@@ -19,7 +19,7 @@ slug: unit1
 
 - [Course Setup](../../resources/course-setup)
 - [Teamwork](../../ponder/team-building)
-- [Spec Driven development]()
+- [Spec Driven development](../../ponder/spec-driven)
 
 ## Prove
 
