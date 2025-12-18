@@ -18,11 +18,11 @@ slug: unit2
 
 ## Ponder
 
-- [Agentic AI](../../ponder/nosql-data-modeling)
+- [Measuring Web Performance](../../resources/measuring-web-perf)
+- [Agentic AI](../../ponder/agentic-ai)
 
 ## Prove
 
 - [Bakeoff 1](../../prove/bakeoff-1)
 - [Bakeoff 2](../../prove/bakeoff-2)
 - [Bakeoff 3](../../prove/bakeoff-3)
-

@@ -1,5 +1,6 @@
 ---
 title: Course Setup
+description: Instructions for setting up software and tools for this course.
 time: 20min
 ---
 

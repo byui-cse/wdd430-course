@@ -1,6 +1,6 @@
 ---
 title: Team Building
-description: This activity will introduce the Team project that we will work on over the rest of the semester.
+description: This activity will help students form the teams that we will work in over the rest of the semester.
 time: 1 hour
 ---
 

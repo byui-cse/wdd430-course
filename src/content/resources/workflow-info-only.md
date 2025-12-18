@@ -1,6 +1,7 @@
 ---
 title: Managing the Modern Frontend Workflow
 time: 20min
+description: What does a common frontend project and workflow look like?
 ---
 
 Development workflow has become quite complicated for Web development.

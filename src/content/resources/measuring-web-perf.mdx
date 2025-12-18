@@ -1,0 +1,145 @@
+---
+title: Measuring Web Performance
+description: Build "muscle memory" for browser Developer Tools. By the end of this session, you will be able to retrieve every metric required for the Bakeoff Scorecard.
+time: 1-2 hours
+aiUsage: green
+---
+
+import Details from '../../components/Details.astro'
+
+## Introduction
+
+As we try to assess web performance, it is important that we know how to measure common metrics. This activity will help us learn how to do that.
+
+## **01** The "Heavy" Audit (Client-Side Metrics)
+
+*In this phase, you will practice using Google Lighthouse and the Network tab on a production site known for heavy assets (e.g., `cnn.com`, `nytimes.com`, or `reddit.com`).*
+
+### 1. Setup
+1. Open Google Chrome.
+2. **Important:** Open an **Incognito Window** (Ctrl+Shift+N or Cmd+Shift+N).
+   * *Why? Browser extensions often inject code that slows down performance, skewing your test results.*
+3. Navigate to a "heavy" media website (e.g., [www.cnn.com](https://www.cnn.com)).
+4. Open Developer Tools (F12 or Cmd+Option+I).
+
+### 2. Measuring Core Vitals (Lighthouse)
+1. Inside Developer Tools, click the **Lighthouse** tab.
+2. Select the following settings:
+   * **Mode:** Navigation (Default)
+   * **Device:** Mobile
+   * **Categories:** Performance
+3. Click **Analyze page load**.
+4. Find the Metrics section and click "Expand View". Spend some time reading the articles linked by each metric so that you understand what they are measuring. 
+
+**Record the following:**
+* **Performance Score:** The large circled number (0-100).
+* **LCP (Largest Contentful Paint):** Time in seconds. *Goal: < 2.5s*.
+* **CLS (Cumulative Layout Shift):** The shift score. *Goal: < 0.1*.
+* **TBT (Total Blocking Time):** Time in milliseconds.
+* **Speed Index:** Time in seconds.
+
+### 3. Measuring TTFB (Time to First Byte)
+Lighthouse combines this into the overall score, but for the Bakeoff, we measure it separately to judge server speed.
+
+1. Navigate to the **Network** tab in Developer Tools.
+2. Refresh the page.
+3. In the "Filter" box, select **Doc** (or click the "Doc" button) to isolate the initial HTML request.
+4. Click the very first request in the list (usually the website name).
+5. Click the **Timing** tab in the right-hand panel.
+6. Look for **"Waiting for server response"**. This number is your TTFB.
+
+---
+
+## Part 2: The "Local" Audit (DX & Bundle Metrics)
+*In this phase, you will create a throwaway project to learn how to measure Developer Experience (DX) and build sizes.*
+
+### 1. Generate a Dummy Project
+Run the following commands in your terminal to create a standard Svelte project (using Vite):
+```bash
+    npm create vite@latest benchmark-test-svelte -- --template svelte
+    cd benchmark-test-svelte
+    npm install
+    npm run dev
+```
+
+### 2. Measuring Hot Reload (HMR)
+*Measures how fast the interface updates when you save a file.*
+
+1. Open your browser to `http://localhost:5173`.
+2. Open your code editor side-by-side with the browser.
+3. Open `src/App.svelte` and find a visible heading (e.g., `<h1>`).
+4. **The Test:**
+   * Start a stopwatch (or use your phone).
+   * Change the text in the `<h1>` tag.
+   * Hit Save (Ctrl+S / Cmd+S).
+   * Stop the timer when the text updates in the browser.
+5. **Record:** A modern stack like Vite should be **< 100ms** (instant). Older stacks might take 2000ms+.
+
+>This is a small project and the HMR should be very fast, especially with Vite. We would really need a much larger and more complex project to see a measurable number here...but this is how you would measure it if it was taking longer.
+
+### 3. Measuring Bundle Size
+*The "Dev" server sends uncompressed files. To measure the Scorecard metric, you must **build** the app. It can be interesting to look at the development version of the code as well*
+
+
+1. Stop the dev server (Ctrl+C).
+2. Run the build command:
+```bash
+    npm run build
+```
+3. Look at the terminal output.
+4. **Record (JS):** Look for the `dist/` or `gzip` size of the JavaScript files.
+5. **Record (CSS):** Look for the size of the generated `.css` file.
+6. Open the preview of the page: `npm run preview` and visit the page in Chrome. You can also see the sizes of the assets in the Network tab.
+7. Go ahead and run Lighthouse on the site to see how it does there as well.
+8. Quit preview mode `ctrl-c` and start up your development environment again: `npm run dev`. Look at the Network tab in Chrome and run Lighthouse again with the development code. It's interesting to see how much our code can change with the build!
+
+### 4. Do it again!
+Let's try this one more time using a simple React app this time.
+
+```bash
+cd ..
+npm create vite@latest benchmark-test-react -- --template react
+cd benchmark-test-react
+npm install
+```
+Go back and perform the steps above with the React app as well.
+
+---
+
+## Part 3: Scorecard Cheat Sheet
+
+Use this table to map the input fields in the Bakeoff Scorecard to the specific tool you need to use.
+
+| Scorecard Field | Metric Name | Where to find it |
+| :--- | :--- | :--- |
+| **I. Performance** | | |
+| `vitalsScore` | Performance Score | **Lighthouse:** The large circled number (0-100). |
+| `lcp` | Largest Contentful Paint | **Lighthouse:** "Metrics" section. |
+| `inp` | Interaction to Next Paint | **Lighthouse:** Bottom of metrics (or verify manually by clicking). |
+| `tbt` | Total Blocking Time | **Lighthouse:** "Metrics" section. |
+| `cls` | Cumulative Layout Shift | **Lighthouse:** "Metrics" section. |
+| `speedIndex` | Speed Index | **Lighthouse:** "Metrics" section. |
+| **II. Bundle** | | |
+| `jsBundleSize` | Total JS (KiB) | **Terminal:** Output after `npm run build` OR **Network Tab** (Filter JS). |
+| `cssSize` | Initial CSS (KiB) | **Terminal:** Output after `npm run build` (`.css` files). |
+| `ttfb` | Time to First Byte | **Network Tab:** Filter "Doc" -> Timing -> "Waiting for server response". |
+| **III. DX** | | |
+| `featureVelocity` | Velocity | **Clock:** Time elapsed from "Start" to "Feature Complete". |
+| `hotReload` | HMR (ms) | **Stopwatch:** Time from Ctrl+S to Browser Update. |
+| `devDeps` | Dev Dependencies | **package.json:** Count items in "dependencies" vs "devDependencies". |
+
+---
+
+## Part 4: Debrief Discussion
+
+**1. LCP vs. TTFB**
+* **Question:** If your TTFB is high (slow server), is it possible to have a fast LCP?
+* **Answer:** No. TTFB is the "floor." The user sees nothing until the server responds.
+
+**2. Bundle Size**
+* **Question:** Why do we measure the `build` size and not the size of the files in our `src` folder?
+* **Answer:** "Tree-shaking" and minification remove unused code and whitespace. The browser only downloads what it needs.
+
+**3. CLS (Stability)**
+* **Question:** Why is CLS a performance metric? It doesn't measure speed.
+* **Answer:** It measures *perceived quality*. A page that loads fast but jumps around (causing you to click the wrong button) feels broken.

@@ -1,0 +1,108 @@
+---
+title: The Stack Decision Post-Mortem
+description: This activity will help guide students through the post-mortem analysis of the bakeoff data to choose the right stack for the job.
+time: 1-2 hours
+aiUsage: green
+---
+
+import Details from '../../components/Details.astro'
+
+## Introduction
+
+A "Post Mortem" when talking about a project usually refers to analyzing any data or metrics that were gathered in order to learn from the experience to evaluate success, or identify pitfalls. We are going to us this process to synthesize data from your three Bakeoffs to select the final technology stack for your Capstone Project. You must move beyond "personal preference" and justify your choice using the metrics you collected.
+
+---
+
+## Phase 1: The "Tale of the Tape" (Data Aggregation)
+*Before you can decide, you must see the data side-by-side. Do not rely on your memory of how it felt.*
+
+**Step 1:** Open your three completed Scorecards.
+**Step 2:** Create a simple spreadsheet (Excel/Google Sheets) or a drawn table with the following columns:
+
+| Metric | Stack A (Name) | Stack B (Name) | Stack C (Name) |
+| :--- | :--- | :--- | :--- |
+| **Final Weighted Score** | ... | ... | ... |
+| **LCP (Speed)** | ... | ... | ... |
+| **Bundle Size (JS)** | ... | ... | ... |
+| **Velocity (Hours)** | ... | ... | ... |
+| **DX Frustration (1-5)** | ... | ... | ... |
+| **Ecosystem/Community** | ... | ... | ... |
+
+**Step 3:** Highlight the **winner** for each row in Green and the **loser** in Red.
+
+**Discussion Question:**
+* *Did the stack with the highest "Final Weighted Score" actually feel like the best stack to use? If not, which specific category (Performance vs. DX) is skewing the data?*
+
+---
+
+## Phase 2: The Trade-Off Analysis
+*Engineering is rarely about choosing the "perfect" tool; it is about choosing the right trade-offs. Analyze the conflicts in your data.*
+
+Answer the following questions based on your highlighted table:
+
+**1. The Velocity vs. Performance Gap**
+Look at your **Velocity** (how fast you built it) vs. **LCP/Bundle Size** (how fast it runs).
+* Did the stack that allowed you to build fastest produce the slowest application?
+* If yes: Are you willing to sacrifice user experience for developer speed?
+* If no: You have found a "High Efficiency" stack.
+
+**2. The Complexity Tax**
+Look at **Setup Ease** vs. **Community/Ecosystem**.
+* Did the "easy to start" stack have a smaller ecosystem?
+* Imagine you run into a critical bug in Week 12 of your project. Which stack gives you the best chance of finding a StackOverflow answer or a library to fix it?
+
+**3. The "Joy" Factor**
+Look at **DX Frustration** and **Readability**.
+* You will be working on this project for the rest of the course. Which code base do you dread looking at the least?
+
+---
+
+## Phase 3: The "Future Proofing" Stress Test
+*Your Bakeoff was a small MVP. Your final project will be much larger. Stress test your choice against future requirements.*
+
+Pick your top contender and ask these three questions. If the answer is "No" or "Very Hard," you may need to reconsider.
+
+1.  **State Management:** If my app grows to 50+ components, does this stack have a clear, documented pattern for handling complex global state?
+2.  **Authentication:** Does this stack play nicely with standard Auth providers (Supabase Auth, Auth0, etc.) without writing custom middleware hell?
+3.  **Hiring/Market:** If I put this stack on my resume, does it demonstrate knowledge of modern web standards, or is it a niche tool?
+
+---
+
+## Phase 4: The Final Decision & Defense
+*You will now write your "Stack Defense." This is a standard practice in engineering teams (often called an RFC or Request for Comments).*
+
+**Deliverable:**
+Write a 1-page document (or Markdown file) using the template below.
+
+### Template: Stack Decision Record (SDR)
+
+**Project Name:** [Your Project Name]
+**Selected Stack:** [e.g., Next.js / SvelteKit / Vue]
+
+**1. The Verdict**
+*State clearly why you chose this stack in one sentence.*
+> Example: "We selected SvelteKit because it offered the highest performance scores (LCP 1.2s) while maintaining a high developer velocity, despite a smaller ecosystem than React."
+
+**2. The Data Defense**
+*Cite 3 specific metrics from your scorecard that support this decision.*
+* **Metric A:** (e.g., "Our JS Bundle was 40% smaller than the nearest competitor.")
+* **Metric B:** (e.g., "Documentation score was 5/5, which is critical for our team.")
+* **Metric C:** (e.g., "HMR was instant, reducing friction during UI iteration.")
+
+**3. The Recognized Risks**
+*Admit the weak point of your chosen stack and how you will mitigate it.*
+> Example: "The biggest risk with this stack is the smaller community. We will mitigate this by relying heavily on the official Discord and keeping our dependencies minimal to avoid abandoned libraries."
+
+**4. The Runner-Up**
+*Briefly explain why the 2nd place stack lost.*
+> Example: "React was a close second due to its massive ecosystem, but the initial configuration complexity and the high boilerplate code resulted in a 20% slower implementation time during the bakeoff."
+
+---
+
+## Appendix: Grading Rubric for the Post-Mortem
+
+| Criteria | Proficient | Needs Improvement |
+| :--- | :--- | :--- |
+| **Data Usage** | Decision is referenced directly against recorded Bakeoff metrics (Velocity, LCP, etc.). | Decision is based entirely on "feeling" or "it was easy," ignoring the recorded data. |
+| **Risk Assessment** | Identifies a legitimate weakness in the chosen stack (honest assessment). | Claims the chosen stack is perfect with no downsides. |
+| **Clarity** | The "Verdict" is concise and professional. | The reasoning is rambling or unclear. |
