@@ -18,8 +18,8 @@ slug: unit2
 
 ## Ponder
 
-- [Measuring Web Performance](../../resources/measuring-web-perf)
 - [Agentic AI](../../ponder/agentic-ai)
+- [Measuring Web Performance](../../resources/measuring-web-perf)
 
 ## Prove
 
