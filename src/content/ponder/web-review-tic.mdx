@@ -47,24 +47,24 @@ Even with the help that we can get from all of these tools, semantics are still 
 For this exercise (building the tic tac toe board) we will write most of the HTML by hand since it is fairly simple. We do however need to think about the best way to represent our board. CSS Grid seems like a natural fit for styling, which means that we should try and structure out HTML with a parent and 9 children. One for each cell of our board.
 
 1. Create a new file: `review/client/index.html` and add the basis of a valid HTML page with some semantic structure: `header`, `main`, `nav`, `footer`
-2. Add a title in the header to let users know what the page is about. Then build out the board. A `section` might be our bst option to represent our board, and then simple `divs` for the cells.
+2. Add a title in the header to let users know what the page is about. Then build out the board. A `section` might be our bst option to represent our board, and then since we will be performing an action when we click on a cell, a simple `button` would work best.
 3. Think through all of the UI elements we will need to really play this game. For example what if a user wants to play again? How will we let the user know when a game is over, and what the result was? Make sure to include these in your page.
 >Even though we will eventually generate this board with Javascript, we should build out an example now that we can use to figure out the styling. That means we need 9 divs. [Emmet](https://emmet.io) could be helpful here. It is built into VS Code.
 > 
->Try typing the following where you want the divs: `div.cell*9{X}` then hit `tab`. It should expand into the following:
+>Try typing the following where you want the divs: `button.cell*9{X}` then hit `tab`. It should expand into the following:
 >```html
-><div class="cell">X</div>
-><div class="cell">X</div>
-><div class="cell">X</div>
-><div class="cell">X</div>
-><div class="cell">X</div>
-><div class="cell">X</div>
-><div class="cell">X</div>
-><div class="cell">X</div>
-><div class="cell">X</div>
+><button class="cell">X</button>
+><button class="cell">X</button>
+><button class="cell">X</button>
+><button class="cell">X</button>
+><button class="cell">X</button>
+><button class="cell">X</button>
+><button class="cell">X</button>
+><button class="cell">X</button>
+><button class="cell">X</button>
 >```
 >
->You could even add the containing `section` if you wanted: `section#board.board>div.cell*9{X}`. This would create a section with a class and ID of `board` then add 9 divs as children.
+>You could even add the containing `section` if you wanted: `section#board.board>button.cell*9{X}`. This would create a section with a class and ID of `board` then add 9 buttons as children.
 
 
 ## **02** CSS
@@ -116,20 +116,34 @@ button {
   display: grid;
   grid-template-columns: repeat(3, var(--cell-size));
   grid-template-rows: repeat(3, var(--cell-size));
-  font-size: 2.5rem;
   text-align: center;
+  button {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    font-size: 2.5rem;
+  }
   /* start a child 2 and then skip three (2,5,8)...this will select the middle column */
-  > div:nth-child(3n + 2) {
+  > button:nth-child(3n + 2) {
     border-left: 1px solid;
     border-right: 1px solid;
   }
   /* start on the 4th from the beginning (4,5,6,7,8,9) then start at 6 from the end (1,2,3,4,5,6) 
   the overlap (4,5,6) matches both conditions (middle row)  */
-  > div:nth-child(n + 4):nth-child(-n + 6) {
+  > button:nth-child(n + 4):nth-child(-n + 6) {
     border-top: 1px solid;
     border-bottom: 1px solid;
   }
 }
+
+.history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+}
+
 ```
 </Details>
 
@@ -381,7 +395,7 @@ const resetButton = document.querySelector("#restart");
 const resultsEl = document.querySelector(".results");
 
 function cellTemplate(item, index) {
-  return `<div id="cell-${index}" data-index="${index}">${item}</div>`;
+  return `<button id="cell-${index}" data-index="${index}">${item}</button>`;
 }
 
 function boardTemplate(board, container = false) {
@@ -560,7 +574,7 @@ const saveButton = document.querySelector("#save");
 const resultsEl = document.querySelector(".results");
 
 function cellTemplate(item, index) {
-  return `<div id="cell-${index}" data-index="${index}">${item}</div>`;
+  return `<button id="cell-${index}" data-index="${index}">${item}</button>`;
 }
 
 function boardTemplate(board, container = false) {
@@ -681,6 +695,201 @@ renderHistory();
 ```
 </Details>
 
+## **08** (Optional) Solution with a Framework
 
+It is interesting to see how the solution changes if a frontend framework is used instead of vanilla Javascript. some of the code we wrote will become unnecessary because the framework will handle things like updating UI when state changes for example.
+
+Here is a possible solution using the Svelte framework. Notice how the implementation changed in places because of the framework.
+
+If you want to run this then do the following:
+
+1. In the terminal make sure that you are in the `review` directory.
+2. Type `(p)npm create vite@latest`  Type `svelte` for the project name, pick Svelte as the tool, Javascript, no on the rollup, and yes on installing the dependencies.
+3. Open up `review/svelte/src/App.svelte` Replace the contents with the code below.
+4. Create a file in `review/svelte/src/lib/Board.svelte` and copy the code below into that file.
+5. Check in the browser to make sure everything is working.
+
+<Details summary="Svelte Solution">
+```js
+<script>
+// Board.svelte
+  const { board, boardClickedHandler = () => {} } = $props();
+  // we are sharing this with the main board which needs to be interactive, and the history boards which should not. One way to handle this is to pass in a function for the handler. If no function is passed an empty function is used
+</script>
+
+<section aria-label="board">
+  {#each board as cell, index}
+    <button onclick={boardClickedHandler} data-index={index}>{cell}</button>
+  {/each}
+</section>
+
+<style>
+  :root {
+    --cell-size: 3rem;
+  }
+  section {
+    display: grid;
+    grid-template-columns: repeat(3, var(--cell-size));
+    grid-template-rows: repeat(3, var(--cell-size));
+    font-size: 2.5rem;
+    text-align: center;
+    /* start a child 2 and then skip three (2,5,8)...this will select the middle column */
+    > button:nth-child(3n + 2) {
+      border-left: 1px solid;
+      border-right: 1px solid;
+    }
+    /* start on the 4th from the beginning (4,5,6,7,8,9) then start at 6 from the end (1,2,3,4,5,6) 
+  the overlap (4,5,6) matches both conditions (middle row)  */
+    > button:nth-child(n + 4):nth-child(-n + 6) {
+      border-top: 1px solid;
+      border-bottom: 1px solid;
+    }
+  }
+  button {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+  }
+</style>
+
+```
+
+```js
+<script>
+// App.svelte
+  import Board from "./lib/Board.svelte";
+  import { onMount } from "svelte";
+
+ // these are all state variable because if any of them change we want the UI to update as well.
+  let board = $state(["", "", "", "", "", "", "", "", ""]);
+  let currentPlayer = $state("O");
+  let results = $state("");
+  let history = $state([]);
+
+  function boardClickedHandler(ev) {
+    const cell = ev.target;
+    const cellIndex = cell.dataset.index;
+    if (board[cellIndex]) {
+      // there is something there...do nothing
+      return;
+    } else {
+      // set the cell to the correct character
+      board[cellIndex] = currentPlayer;
+      // board re-renders automatically because we change a state variable: board
+      
+      // change the current player
+      currentPlayer = currentPlayer == "X" ? "O" : "X";
+      // check for win/draw
+      const winner = checkWin();
+      // if we got anything back from the check function the game is over.
+      if (winner) {
+        displayResults(winner);
+      }
+    }
+  }
+
+  function resetHandler(ev) {
+    board = ["", "", "", "", "", "", "", "", ""];
+    results = "";
+  }
+
+  function checkWin() {
+    const winConditions = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8], //rows
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8], //cols
+      [0, 4, 8],
+      [2, 4, 6] //diagonals
+    ];
+    for (let condition of winConditions) {
+      const [a, b, c] = condition;
+
+      // Check if the first cell is not empty AND matches the other two
+      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+        return board[a]; // Returns 'X' or 'O' as the winner
+      }
+    }
+
+    // Check for a draw (if no cells are empty)
+    if (!board.includes("")) {
+      return "Draw";
+    }
+
+    return null; // Game is still going
+  }
+
+  function displayResults(winner) {
+    if (winner == "Draw") {
+      results = "Game is a Draw.";
+    } else results = `Player ${winner} has won!`;
+  }
+
+  async function saveHandler() {
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(board)
+    };
+    const res = await fetch("http://localhost:3000/boards", options);
+    if (res.ok) {
+      console.log(await res.json());
+      renderHistory();
+    }
+  }
+
+  async function renderHistory() {
+    // get saved games
+    const res = await fetch("http://localhost:3000/boards");
+    if (res.ok) {
+      history = await res.json();
+    }
+  }
+
+  onMount(() => {
+    // get history
+    renderHistory();
+  });
+</script>
+
+<main>
+  <h1>Tic Tac Toe</h1>
+
+  <div class="card">
+  <p>Currently {currentPlayer}'s turn</p>
+    <Board {board} {boardClickedHandler} />
+  </div>
+
+  <section class="controls">
+    <button id="restart" onclick={resetHandler}>Restart</button>
+    <button id="save" onclick={saveHandler}>Save</button>
+  </section>
+  {#if results}
+    <p class="results">{results}</p>
+  {/if}
+  <h2>History</h2>
+  <section class="history">
+    {#each history as game}
+      <Board board={game} />
+    {/each}
+  </section>
+</main>
+
+<style>
+  .history {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+  }
+</style>
+
+```
+
+</Details>
 
 
