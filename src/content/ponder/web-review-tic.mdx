@@ -5,7 +5,9 @@ time: 1-2 hours
 aiUsage: yellow
 ---
 
->You should use minimal AI on this activity. Do not let AI generate any code for you. Turn off your Inline suggestions! You can use AI to help explain concepts you are struggling with, remind you how to do a very specific thing (ie "how do I enable the json middleware in express") or to help you debug code that you have written yourself.
+>You should use minimal AI on this activity. Do not let AI generate any code for you. Turn off your Inline suggestions!
+>
+> You can use AI to help explain concepts you are struggling with, remind you how to do a very specific thing (ie "how do I enable the json middleware in express") or to help you debug code that you have written yourself.
 
 ## Introduction
 
@@ -83,7 +85,7 @@ CSS is still responsible for the styling of web pages. But it shows up in many d
 5. TailwindCSS:
     [Tailwind](https://tailwindcss.com) plays a similar role to Bootstrap, but follows a utility first approach.
 
-Again for the purposes of this review we are going focus on CSS. Write the CSS necessary to style our simple page.
+Again for the purposes of this review we are going focus on vanilla CSS. Write the CSS necessary to style our simple page.
 
 1. Start with the global styles you want: font, spacing, page content width, general layout.
 2. Then move to the board. CSS Grid will be the natural tool to do the major layout for it. Make sure that the cells are big enough to easily hit with a finger or pointer.
@@ -304,6 +306,7 @@ Now the code executes in the order we need it to.
 After all of that review. Let's put it into practice by building out out Tic Tac Toe Application. Whenever starting a new programming task it is always taking a minute and thinking through the problem to come up with a list of steps. Make a list of your own, then compare to the one provide below.
 
 <Details summary="List of Steps">
+```text
 create a place to store our board and initialize it empty.
 initialize the current player. (X or O)
 get references to the DOM Nodes we will be interacting with: boardElement, resetButton, resultsElement
@@ -321,6 +324,7 @@ watch for click on reset button
     clear out board
     render empty board
     clear any results message
+```
 </Details>
 
 Take a minute and think through what implementing the list might look like in code. Specifically what functions would make sense to create? Go ahead and stub out those functions. Again compare your work with the solution below. Your list does not need to match, but should encapsulate all of the same functionality.
