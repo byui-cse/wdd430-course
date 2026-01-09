@@ -30,11 +30,12 @@ Open the downloaded template in VS Code and follow the instructions in the ReadM
 ```
 4. Next create a detailed project specification by running the spec kit script again. For Example:
 ```text
-/speckit.spec Create a detailed project specification for a web application that allows users to create and share notes. The application should include user authentication, note creation and editing, and note sharing features
+/speckit.specify Create a detailed project specification for a web application that allows users to create and share notes. The application should include user authentication, note creation and editing, and note sharing features
 ```
 5. Review the generated specification and make any necessary edits or additions to ensure that it accurately reflects your project idea. Make sure to review the **entire** specification including the technical requirements and acceptance criteria.
 6. Don't be afraid to have the AI regenerate sections that you are not happy with. You can also manually edit any sections that need improvement.
-7. Save your completed specification for future reference.
+7. You can now optionally have spec kit review the specification for points that need more clarification by running the `/speckit.clarify` script. 
+8. Save your completed specification for future reference.
 
 You will notice that there are more steps in the ReadMe for Spec-Kit. The next step would be to generate an implementation plan from the specification you just created. However we will save that for a future activity. For that step we need to start thinking about technology stacks and frameworks to use which we are not ready for yet.
 
@@ -43,25 +44,24 @@ You will notice that there are more steps in the ReadMe for Spec-Kit. The next s
 In a future activity we will take the specification that you created in this activity and use it to generate an implementation plan and task list for building the application. This will help us (and AI) to stay focused and on track as we build out our application. Here is a summary of how to do that when we are ready:
 
 1. Choose the technology stack that you will be using to build your application. This should include the front-end framework, back-end framework, database, and any other tools or libraries that you plan to use.
-2. Use the spec-kit script to generate an implementation plan based on your project specification and chosen technology stack. For Example:
+2. Create a branch in your spec-kit project for the implementation plan.
+3. Use the spec-kit script to generate an implementation plan based on your project specification and chosen technology stack. For Example:
 ```text
 /speckit.plan Create an implementation plan for the project specification using the following technology stack:
 - Front-end: React
 - Back-end: Node.js with Express
 - Database: MongoDB
 ```
-3. Review the generated implementation plan and make any necessary edits or additions to ensure that it accurately reflects your project idea and chosen technology stack.
-4. Use the implementation plan to then create a list of tasks that need to be completed in order to build the application. This can also be done using the spec-kit script. Make sure that you provide the specification file and implementation plan as context to the AI! For Example:
+4. Review the generated implementation plan and make any necessary edits or additions to ensure that it accurately reflects your project idea and chosen technology stack.
+5. Use the implementation plan to then create a list of tasks that need to be completed in order to build the application. This can also be done using the spec-kit script. Make sure that you provide the specification file and implementation plan as context to the AI! For Example:
 ```text
 /speckit.tasks 
 ```
-5. Review the generated task list and make any necessary edits or additions to ensure that it accurately reflects the work that needs to be done to build the application.
-6. Once you have a task list you are happy with you can start working through the tasks one by one to build out your application, or have AI help you with the implementation of each task while you review and test the results.
+6. Review the generated task list and make any necessary edits or additions to ensure that it accurately reflects the work that needs to be done to build the application.
+7. Once you have a task list you are happy with you can start working through the tasks one by one to build out your application, or have AI help you with the implementation of each task while you review and test the results.
 ```text
 /speckit.implement
 ```
 
-When you use AI in this way to generate larger pieces of code it is important to always review and test the results. AI can make mistakes and generate code that does not work as expected. Always make sure to test the generated code thoroughly before moving on to the next task. Your time as a developer switches from writing code to reviewing code. Don't get lazy with this step! One it will help you learn, and two it will help you catch mistakes before they become bigger problems later on.
-
-
+When you use AI in this way to generate larger pieces of code it is important to always review and test the results. AI can make mistakes and generate code that does not work as expected. Always make sure to test the generated code thoroughly before moving on to the next task. Your time as a developer shifts from writing code to reviewing code. Don't get lazy with this step! One, it will help you learn, and two it will help you catch mistakes before they become bigger problems later on.
 

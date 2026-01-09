@@ -18,7 +18,7 @@ slug: unit2
 
 ## Ponder
 
-- [Agentic AI](../../ponder/agentic-ai)
+- [Agentic AI](../../ponder/spec-driven)
 - [Measuring Web Performance](../../resources/measuring-web-perf)
 
 ## Prove
