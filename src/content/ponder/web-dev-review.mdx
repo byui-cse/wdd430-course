@@ -1,0 +1,374 @@
+---
+title: Web Development Review
+description: This activity will review core concepts in Web Development that you need to succeed.
+time: 1-2 hours
+---
+
+## Introduction
+
+In the [syllabus](../../resources/syllabus) we find the following information:
+
+**WDD 360** – It is expected that you have learned and mastered the information made available to you in WDD 360, and its prerequisite courses. If you feel rusty, the following is a more specific list of topics you would have been introduced to in those courses that will be important that you are comfortable with, and some sources to use for review before the course begins.
+
+1. You should be very comfortable writing HTML and modern CSS. If you need a review you can read [MDN HTML Introduction](https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics) and [MDN CSS Introduction](https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/CSS_basics).
+2. You should be comfortable with JavaScript fundamentals including variables, data types, functions, loops, and conditionals. If you need a review you can read [MDN JavaScript First Steps](https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics).
+3. You should be comfortable creating websites with template based tools using a component based architecture.
+4. Make sure you are comfortable with basic DOM manipulation with JavaScript. If you need a review you can read [MDN Manipulating Documents](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Manipulating_documents).
+5. Make sure you are comfortable with basic event management with JavaScript. If you need a review you can read [MDN Introduction to Events](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events).
+6. You should also be comfortable starting up a NodeJS server and running a simple Express app. If you need a review you can read [Express.js](https://expressjs.com/en/starter/hello-world.html).
+
+This course is challenging to write a review for because the sky is the limit on technology stacks that might show up. But this is a Web development course and so it is reasonable to assume that HTML, CSS, and Javascript will show up to some extent in each stack. We can also assume that there will be developer tooling involved as well to help us manage dependencies and other complexities.
+
+This review then will focus on these things.
+
+### Learning objectives
+
+- Recall and practice core HTML semantics and accessibility techniques ✅
+- Write and organize CSS using modern approaches (vanilla, SCSS, Tailwind) ✅
+- Manipulate the DOM and use events to create interactive pages ✅
+- Use Fetch/Promises and async/await safely, and handle errors ✅
+- Start a simple toolchain (Vite + Svelte), run a dev server, and understand package managers and bundlers ✅
+
+Each section below contains a short explanation followed by one or more exercises with step-by-step instructions you can complete in 15–45 minutes.
+
+
+## **01** HTML
+
+HTML is still the star of the show in web development since that is how content is delivered to browsers. More and more however the HTML is generated with the help of tools instead of being written by hand by a developer.
+
+1. Writing by hand with help from tools like Emmet
+2. Using a templating tool (ie Astro, 11ty)
+3. Server side generating HTML (with PHP, Ruby, Python, or NodeJS for example)
+4. Client side rendering HTML (covered in the JavaScript section)
+
+Exercises
+
+1) Semantic page & accessibility (15–30 min) — create a small HTML page from scratch that includes a header, a main section with two articles, and an accessible form.
+
+   Steps:
+   - Create `exercise-html/index.html` and add a semantic structure: `header`, `main`, `article`, `nav`, `footer`.
+   - Add a form with labels and proper `for`/`id` attributes, and include ARIA attributes if needed.
+   - Run the page locally (open in a browser) and use browser devtools Accessibility inspector to check landmarks.
+
+3) Server-side HTML example (10 min)
+
+   Example PHP snippet (put it in `server.php` or read it to compare server-side rendering):
+
+   ```php
+   <?php
+   $title = 'Hello from PHP';
+   ?>
+   <!doctype html>
+   <html>
+     <head><meta charset="utf-8"><title><?= htmlentities($title) ?></title></head>
+     <body>
+       <h1><?= htmlentities($title) ?></h1>
+     </body>
+   </html>
+   ```
+
+   Task: Start a built-in PHP server (`php -S localhost:8000`) and open `server.php` to see server-rendered HTML.
+
+
+## **02** CSS
+
+CSS is still responsible for the styling of web pages. But it shows up in many different ways.
+
+1. Vanilla CSS (selectors, attributes, etc)
+    In this use case CSS naming and architecture become very important. Conventions like [BEM](https://getbem.com) or [CUBE CSS](https://cube.fyi) are commonly used
+3. SCSS
+4. Scoped CSS using a component based framework
+   Many Frameworks will allow scoped CSS to be attached directly to a component to avoid naming problems with the CSS default of global scope.
+5. Libraries such as Bootstrap
+   Bootstrap and other libraries were attempts to share solutions to common problems.
+6. TailwindCSS
+   [Tailwind](https://tailwindcss.com) plays a similar role to Bootstrap, but follows a utility first approach.
+
+**Exercise:**
+
+1) Selectors & responsive layout (20–40 min)
+
+   Steps:
+   - Implement a two-column responsive layout that collapses to one column under 640px using the HTML generated above
+   - Use Flexbox or Grid and test with browser resize tools.
+
+## **03** Javascript and the DOM
+
+Javascript is still the language of the web. It is used to do everything from adding simple dynamic interactions to our pages, to generating most of the HTML for our site.
+
+### DOM manipulation and events
+
+The original purpose of Javascript was to allow developers to make their webpages dynamic. It's reach has moved beyond that, but a large percentage of Javascript written is still of this purpose.
+
+When the browser requests an HTML file from a server, it downloads it then begins parsing though it. It downloads any `script` files and resolves any `link` requests for css, then it starts converting the HTML into code in it's memory. This code is called the Document Object Model, the DOM. For example if we had the following HTML:
+
+```html
+<html>
+  <body>
+    <h1>Hello World</h1>
+    <p class="p1">This is a paragraph.This is a <a href="#">link</a> in a paragraph.</p>
+    <img src="image.jpg" alt="An image">
+  </body>
+</html>
+```
+
+It would look like this in the DOM:
+
+```text
+Document
+ └── html
+     └── body
+         ├── h1 ("Hello World")
+         ├── p.p1 ("This is a paragraph.")
+            ├── text ("This is a ")
+            ├── a ("link")
+            └── text (" in a paragraph.")
+         └── img
+
+```
+
+Each element becomes a node in a tree. In order to make a change to the document structure, we must first find the right node in the tree. We gain access through the `document` object that the browser makes available to us.
+
+The most common tool for finding the right node is with `document.querySelector` With this we can use any valid CSS selector to identify nodes in the DOM. So using the code provided earlier, if we wanted to make a change to the paragraph with the class `p1` we could do the following: `document.querySelector(".p1");`
+
+Once we have it we can make changes. If we wanted to change the contents of that element we could use several methods:
+
+```javascript
+const theP = document.querySelector(".p1");
+theP.textContent = "This is a new paragraph.";
+theP.innerHTML = "This is <em>fancy</em> content";
+theP.insertAdjacentHTML("afterbegin", "I got inserted at the beginning! ");
+```
+The `textContent` method replaces the contents of the element with the string we provide. The `innerHTML` method does the same, but it also parses the string as HTML. The `insertAdjacentHTML` method inserts the string at the specified location in the element.
+
+We can also take advantage of the events that happen in the browser to make things happen. Take the following markup:
+
+```html
+<h2>Shopping list</h2>
+<label for="item">New Item</label>
+<input type="text" id="item" placeholder="Enter item">
+<button id="addButton">Add Item</button>
+<ul id="shopping-list"></ul>
+```
+
+Ideally when a user enters some text and clicks on the button it will be added to the list. We can use event listeners to make this happen.
+
+```javascript
+const addButton = document.querySelector("#addButton");
+const shoppingList = document.querySelector("#shopping-list");
+const itemInput = document.querySelector("#item");
+
+function addHandler(e) {
+    const item = itemInput.value.trim();
+    if (item) {
+        shoppingList.insertAdjacentHTML("beforeend", `<li>${item}</li>`);
+        itemInput.value = '';
+        itemInput.focus();
+    }
+}
+
+addButton.addEventListener('click', addHandler);
+// Also handle the Enter key for accessibility
+itemInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addHandler(); });
+```
+
+**Exercise (10–20 min)**
+
+- Task: Add keyboard support so pressing Enter in the input also triggers the same handler, and add a small accessibility improvement such as focusing the input after adding an item.
+- Add event delegation to allow clicking a list item to mark it complete.
+
+### Fetch and Promises
+
+When we need to retrieve information from an external source for our web page after it has loaded we use `Fetch`. There is a potential problem however. Requesting data from an external source can take a while. The Javascript engine is single threaded, which means it can only do one thing at a time. The browser handles this with Promises and the event loop.
+
+You should remember from previous classes using the `async/await` syntax.  This is the most common way of telling the browser what it should do when the promise resolves...or finishes. Let's look at an example:
+
+```javascript
+const baseUrl = "https://pokeapi.co/api/v2/pokemon/";
+
+async function getData(url) {
+    console.log("getData Starts")
+  const response = await fetch(baseUrl + url);
+  console.log(response);
+  const data = await response.json();
+  console.log("inside getData", data);
+  return data;
+}
+
+const data = getData("ditto");
+console.log("after getData", data)
+```
+
+If you run this code what will you see in the console? Discuss with a neighbor, then look below.
+
+import Details from '../../components/Details.astro'
+
+<Details summary="Results" >
+
+When you run this code you will see the following in the console:
+
+1. getData Starts
+2. after getData, undefined
+3. inside getData, the data
+
+Were you surprised by any part of this?
+
+Async functions always return a promise. So even though we did `const data = await response.json();` we still have to `await` again when we run the function if we need the results of that function to be ready before we move on...which we did in this case.
+
+</Details>
+
+To get this to work we need to `await` the call to `getData`. In the past we could only do that inside of another `async` function, but we now have [top level await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await#top_level_await). But this only works in ESModules. So we can't take advantage of it here.
+
+```javascript
+const baseUrl = "https://pokeapi.co/api/v2/pokemon/";
+
+async function getData(url) {
+    console.log("getData Starts")
+  const response = await fetch(baseUrl + url);
+  console.log(response);
+  const data = await response.json();
+  console.log("inside getData", data);
+  return data;
+}
+
+async function init() {
+    const data = await getData("ditto");
+    console.log("after getData", data)
+}
+init();
+
+```
+
+Now the code executes in the order we need it to.
+
+1. getData Starts
+2. inside getData, the data
+3. after getData, the data
+
+**Exercise (20min)**
+
+- Rewrite the fetch example above to include `try`/`catch` for error handling and a loading state.
+- Add a simple UI indicator while data is being fetched.
+
+### Generating HTML content with Javascript without frameworks
+
+**Exercise (20min)**
+
+- Using the list of items from the previous step, render out the list of Pokemon using `insertAdjacentHTML` or by creating elements with `document.createElement`. 
+
+### Generating HTML content with Frameworks
+
+See section on Tooling fo this example.
+
+## **04** Tooling
+
+Review [Frontend workflow](../../resources/workflow-info-only)
+
+
+## **05** Pulling it all together
+
+Let's finish up the review with an activity to pull all these concepts together.
+
+Follow-along activity (30-60 min) — Build a small Svelte app that fetches and displays Pokémon
+
+Steps
+
+1) Create the project
+
+   - Run `npm create vite@latest` (or `pnpm create vite`) and choose the `svelte` template.
+   - Install dependencies and start the dev server (`npm install` / `pnpm install`, then `npm run dev`).
+
+2) Understand the entry point
+
+   - Note that `src/App.svelte` is the top-level component. We'll add a `src/components/PokemonList.svelte` for our UI.
+
+3) Build `PokemonList.svelte`
+
+   - Fetch a list of Pokémon from the PokeAPI and show their names in a list. You shuld be able to re-use some of the code above.
+   - Add a click handler so selecting a Pokémon fetches and displays details (sprite, types, abilities).
+   - Add minimal CSS to make it look tidy and accessible.
+
+Hints
+
+- Use `onMount` from Svelte to fetch data when the component loads.
+- Keep loading and error state so the UI is robust.
+- Use semantic elements like `ul`/`li` and `button` for clickable items so keyboard users are supported.
+
+<Details summary="Solution (compact)">
+
+PokemonList.svelte (stripped down example):
+
+```svelte
+<script>
+  import { onMount } from 'svelte';
+
+  let pokemons = [];
+  let selected = null;
+  let loading = false;
+  let error = null;
+
+  async function fetchList() {
+    loading = true;
+    try {
+      const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=20');
+      const json = await res.json();
+      pokemons = json.results;
+    } catch (err) {
+      error = 'Failed to load list';
+    } finally {
+      loading = false;
+    }
+  }
+
+  async function selectPokemon(url) {
+    loading = true;
+    try {
+      const res = await fetch(url);
+      selected = await res.json();
+    } catch (err) {
+      error = 'Failed to load details';
+    } finally {
+      loading = false;
+    }
+  }
+
+  onMount(fetchList);
+</script>
+
+{#if loading}
+  <p>Loading…</p>
+{:else}
+  {#if error}<p class="error">{error}</p>{/if}
+  <ul>
+    {#each pokemons as p}
+      <li><button on:click={() => selectPokemon(p.url)}>{p.name}</button></li>
+    {/each}
+  </ul>
+
+  {#if selected}
+    <section aria-live="polite">
+      <h2>{selected.name}</h2>
+      <img src={selected.sprites.front_default} alt="{selected.name} sprite">
+      <p>Types: {selected.types.map(t => t.type.name).join(', ')}</p>
+    </section>
+  {/if}
+{/if}
+
+<style>
+  ul { list-style: none; padding: 0; }
+  li + li { margin-top: 0.5rem; }
+  button { cursor: pointer; }
+  .error { color: #b00; }
+</style>
+```
+
+Extension ideas
+
+- Add pagination or infinite scroll
+- Cache details in a Map to avoid repeated requests
+- Add small animations and responsive layout
+
+</Details>
+
+
+
