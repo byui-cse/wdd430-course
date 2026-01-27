@@ -10,7 +10,7 @@ Each week there is an expectation that the student will do some additional resea
 
 - Web performance
 - Web architectures
-- Emerging web techologies or platforms
+- Emerging web techologies or platforms/tools
 - Information about advantages and disadvantages of different platforms
 - Information about identifying the right tool for the job.
 - Information that helped you solve a problem you were working on this week in your code or otherwise.
