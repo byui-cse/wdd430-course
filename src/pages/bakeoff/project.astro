@@ -8,6 +8,6 @@ import Login from "../../components/bakeoff/Login.svelte";
   <h2>Project Bakeoff Reporting</h2>
   <Login client:load>
     <!-- @ts-expect-error -->
-    <ProjectDetails client:load />
+    <ProjectDetails client:only="svelte" />
   </Login>
 </BaseLayout>

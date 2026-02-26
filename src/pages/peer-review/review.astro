@@ -8,6 +8,6 @@ import ReviewForm from "../../components/peer-review/ReviewForm.svelte";
   <h2>Peer Review Reporting</h2>
   <Login client:load>
     <!-- @ts-expect-error -->
-    <ReviewForm client:load />
+    <ReviewForm client:only="svelte" />
   </Login>
 </BaseLayout>

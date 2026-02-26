@@ -8,6 +8,6 @@ import TeamDetails from "../../components/peer-review/TeamDetails.svelte";
   <h2>Peer Review Reporting</h2>
   <Login client:load>
     <!-- @ts-expect-error -->
-    <TeamDetails client:load />
+    <TeamDetails client:only="svelte" />
   </Login>
 </BaseLayout>
