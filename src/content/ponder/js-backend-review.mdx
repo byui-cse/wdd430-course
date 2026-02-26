@@ -81,7 +81,7 @@ Finally, the client receives the response. Depending on the content type, the cl
 
 An express server only responds to routes that have been explictly defined. For example in the simple server we setup earlier we defined a root route:
 
-```Javascript
+```javascript
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -89,7 +89,7 @@ app.get("/", (req, res) => {
 
 This reads: "Watch for a `get` request to `/`  Return the string 'Hello world' when you receive it." What if we wanted another route? Maybe to get information about users. It might look like this:
 
-```Javascript
+```javascript
 app.get("/users", (req, res) => {
   res.send("Hello User route!");
 });
@@ -99,7 +99,7 @@ Now we can make a request to `http://localhost:3000/users`.  Sometimes it is nic
 
 Another common form would leave out the explicit "id" key and might look like this instead: `/users/1` This would be an example of a express parameter. In both cases the sent information can be found on the `request` object. We will look at that closer in the next step. For the Express parameter to work we will need to make a change to our route:
 
-```Javascript
+```javascript
 app.get("/users/:id", (req, res) => {
   res.send("Hello User route!");
 });
@@ -107,7 +107,7 @@ app.get("/users/:id", (req, res) => {
 
 `get` requests are the most common type of request, but what if a user was filling out and submitting a form? This would usually come as a `post` request and must be handled if we want to allow it. It would look like this:
 
-```Javascript
+```javascript
 app.post("/users", (req, res) => {
   res.send("Hello User route!");
 });

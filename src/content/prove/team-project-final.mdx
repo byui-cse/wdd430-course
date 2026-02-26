@@ -1,27 +1,56 @@
 ---
-title: Team Project - part 5
-description: This activity outlines a recommended pace for your project to stay on track.
-time: 1 hour
+title: Team Project
+description: This activity outlines the expectations for your team project.
+time: ??
 ---
 
 ## Requirements
 
-This project will be completed in a team of 2 students. After forming your team you will be responsible to plan and complete a web application as a showcase that demonstrates your mastery of the topics taught during this course. Your web application can take many different forms, but there is a list of requirements that each app must include:
+1. Build a full-stack web application using the stack and application idea that your team chose in the bakeoffs.
+2. Implement all core features that were outlined in your project pitch.
+3. Ensure that your application is fully functional, with no broken links or 500 errors.
+4. Handle edge cases gracefully (e.g., empty states, loading states).
+5. Use strict TypeScript with no `any` types. Leverage Generics and Utility Types where appropriate.
+6. Follow a modular, reusable component architecture in your frontend code.
+7. Achieve high performance and accessibility standards (Lighthouse scores >90, WCAG 2.1 AA compliance).
+8. Set up a fully automated CI/CD pipeline with comprehensive unit tests and critical end-to-end user flows (using Playwright or Cypress) that pass in CI.
 
-- At least one detailed, validated form
-- Local storage for persistence
-- Fetching data from an API or json file.
-- Drop-down menu or Modal
-- CSS Animation
-- Responsive design
-- Good user experience (UX) and accessibility
-- URL parameters (data that is passed from page to page in an app through the URL, for example https://example.com/page2.html?id=34 Send the `id` of `34` to the code running at `page2.html`)
-- Use of modules for organization
 
-## Checkpoint
+## Advanced Features Examples (Optional, but will boost your grade)
+1. Implement WebSockets for real-time updates.
+2. Implement complex state management.
+3. Implement Role-Based Access Control (RBAC) for different user types.
+4. Make your application a Progressive Web App (PWA) with offline support.
+5. Integrate multiple third-party APIs (e.g., Stripe for payments, Twilio for messaging, or a complex data visualization library).
 
-This is the end. Turn in your completed project!
+## Submission
+1. Push your final code to the main branch of your GitHub repository.
+2. Ensure that your README includes clear setup instructions and that your /docs folder is complete with architecture diagrams, ADRs, API documentation, and deployment instructions.
+3. Submit the URL of your GitHub repository and a live demo link (if deployed) to the course submission portal by the deadline
+4. Be prepared to present your project in the final week of class. You should highlight the core features, advanced features (if implemented), and discusses the technical choices and challenges you faced during development. Also make sure to demo the deployment and CI/CD pipeline if you implemented one. 
 
-## Meet with the instructor
+>If you are taking the course online this presentation will be done via a recorded video demo that you will submit along with your code. The video should be less than 10 minutes long and should cover the same points as an in-person presentation. One video per team.
 
-Each unit your team should meet with the instructor to review progress and discuss potential problems. Your instructor will give you more details about how this is to happen. It is your responsibility to make sure this meeting does occur!
+## Grading
+
+| Criteria | Exceptional (90-100%) | Proficient (80-89%) | Developing (&lt;80%) | Weight |
+| --- | --- | --- | --- | --- |
+| Core Functionality & Reliability | All features from the pitch are fully functional. Zero "broken" links or 500 errors. Edge cases (empty states, loading) are handled gracefully. | All primary features work, but 1-2 minor bugs or "happy path" only logic exists. Some edge cases are unhandled. | Core features are missing or broken. Frequent crashes or unhandled API errors. | 20% |
+| Type Safety & Quality | Strict TypeScript (no any). Uses Generics and Utility Types. Modular, reusable component architecture. | TypeScript implemented but with occasional loose types. Code is mostly modular. | Little to no type safety. Monolithic code structure that is difficult to maintain. | 15% |
+| UX, a11y & Perf | Lighthouse scores >90. 100% semantic HTML; passes WCAG 2.1 AA. Optimized assets and minimal layout shift (CLS). | Lighthouse scores 70-89. Minor accessibility issues or unoptimized images. | Scores below 70. Significant accessibility barriers or extremely slow load times. | 15% |
+| Testing & DevOps | Fully automated CI/CD. Comprehensive Unit tests and critical E2E user flows (Playwright/Cypress) passing in CI. | Manual deployment or basic CI without automated test blocking. Partial test coverage. | No automated testing or deployment pipeline. Brittle environment. | 15% |
+| Documentation (ADRs) | Complete /docs folder. Architecture Decision Records (ADRs) justify trade-offs. README allows a fresh install in &lt;10 mins. | Documentation exists but lacks "the why" behind decisions. Setup instructions have minor gaps. | Missing or outdated documentation. Team cannot explain technical choices. | 15% |
+| Technical Complexity | Successfully implements 2+ "Advanced Features" (e.g., WebSockets, Complex State Management, RBAC, PWA, Multiple 3rd party API integrations, or Complex Data Viz). | Implements 1 "Advanced Feature" successfully, or 2 with significant limitations. | Project is a basic CRUD app with no significant engineering difficulty. | 20% |
+
+## Peer Review
+
+In Week 13, you will be required to complete a peer review of your teammates contributions to the project. This will help us to identify areas where we can improve as developers and as team members. The peer review will be anonymous and will be used to adjust individual grades based on contribution. More details on the peer review process can be found in the [Peer Review & Documentation](../../ponder/peer-review) activity.
+
+The peer review will be based on both "hard" technical contributions (code quality, version control habits, problem-solving) and "soft" professional skills (reliability, communication, teamwork). You will also provide qualitative feedback on the "bus factor" of your teammates, specific examples of their contributions, and constructive advice for improvement. The average peer review score will be converted into a "grade multiplier" that will be applied to your final grade on the project, rewarding those who contributed meaningfully to their teams and encouraging everyone to be active participants in the project. The exact multipliers are as follows:
+
+| Average Peer Score | Grade Modifier | Rationale |
+| --- | --- | --- |
+| 4.5 – 5.0 | 1.05x (Bonus) | Leadership; the student elevated the team’s output. |
+| 3.5 – 4.4 | 1.0x | Solid contributor; met all expectations. |
+| 2.5 – 3.4 | 0.85x | Minor friction; missed some deadlines or required heavy hand-holding. |
+| Below 2.5 | 0.70x | Significant burden; failed to contribute meaningful code or communication. |

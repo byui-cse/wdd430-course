@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Login from "../../components/bakeoff/Login.svelte";
+import TeamList from "../../components/peer-review/TeamList.svelte";
+---
+
+<BaseLayout>
+  <h2>Peer Review Reporting</h2>
+  <Login client:load>
+    <TeamList client:only />
+  </Login>
+</BaseLayout>

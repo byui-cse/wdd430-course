@@ -139,3 +139,39 @@ on public.scorecards
 for all
 using ( public.authorize_bakeoff() )
 with check ( public.authorize_bakeoff() );
+
+-- ============================================
+-- Peer Review tables (passcode-protected)
+-- ============================================
+
+create table if not exists public.peer_review_teams (
+  id uuid default gen_random_uuid() primary key,
+  created_at timestamp with time zone default now() not null,
+  team_name text not null,
+  members jsonb not null default '[]'::jsonb
+);
+
+create table if not exists public.peer_reviews (
+  id uuid default gen_random_uuid() primary key,
+  created_at timestamp with time zone default now() not null,
+  team_id uuid references public.peer_review_teams(id) on delete cascade not null,
+  reviewer_name text not null,
+  responses jsonb not null default '[]'::jsonb
+);
+
+create index if not exists idx_peer_reviews_team_id on public.peer_reviews(team_id);
+
+alter table public.peer_review_teams enable row level security;
+alter table public.peer_reviews enable row level security;
+
+create policy "Passcode required for peer_review_teams"
+on public.peer_review_teams
+for all
+using ( public.authorize_bakeoff() )
+with check ( public.authorize_bakeoff() );
+
+create policy "Passcode required for peer_reviews"
+on public.peer_reviews
+for all
+using ( public.authorize_bakeoff() )
+with check ( public.authorize_bakeoff() );

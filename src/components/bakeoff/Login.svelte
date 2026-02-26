@@ -1,5 +1,5 @@
 <script>
-  import { supabase, initializeSupabase } from "../../lib/supabase"; // Your setup file
+  import { supabase, initializeSupabase } from "../../lib/supabase.ts";
   import { onMount } from "svelte";
 
   /** @type {import('svelte').Snippet} */
