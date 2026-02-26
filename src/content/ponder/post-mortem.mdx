@@ -1,6 +1,6 @@
 ---
-title: The Stack Decision Post-Mortem
-description: This activity will help guide students through the post-mortem analysis of the bakeoff data to choose the right stack for the job.
+title: The Architecture Decision Post-Mortem
+description: This activity will guide students through post-mortem analysis of bakeoff data and document the final stack choice using an Architecture Decision Record (ADR).
 time: 1-2 hours
 aiUsage: green
 ---
@@ -68,33 +68,39 @@ Pick your top contender and ask these three questions. If the answer is "No" or 
 
 ---
 
-## Phase 4: The Final Decision & Defense
-*You will now write your "Stack Defense." This is a standard practice in engineering teams (often called an RFC or Request for Comments).*
+## Phase 4: Document the Decision as an ADR
+*You will now formalize your team decision in an Architecture Decision Record (ADR), a standard engineering artifact used to document important technical choices and trade-offs.
 
 **Deliverable:**
 Write a 1-page document (or Markdown file) using the template below.
 
-### Template: Stack Decision Record (SDR)
+### Template: Architecture Decision Record (ADR)
 
 **Project Name:** [Your Project Name]
-**Selected Stack:** [e.g., Next.js / SvelteKit / Vue]
+**Decision Title:** [e.g., Select SvelteKit for Capstone Web App]
+**Status:** [Proposed | Accepted]
+**Date:** [YYYY-MM-DD]
 
-**1. The Verdict**
-*State clearly why you chose this stack in one sentence.*
-> Example: "We selected SvelteKit because it offered the highest performance scores (LCP 1.2s) while maintaining a high developer velocity, despite a smaller ecosystem than React."
+**1. Context**
+*Describe the problem and constraints that required a decision.*
+> Example: "Our team needed a framework for a semester-long capstone app. Bakeoff metrics showed significant differences in LCP, bundle size, and implementation speed across three candidates."
 
-**2. The Data Defense**
-*Cite 3 specific metrics from your scorecard that support this decision.*
+**2. Decision**
+*State the architectural decision clearly in one sentence.*
+> Example: "We will use SvelteKit as the primary full-stack framework for the capstone project."
+
+**3. Rationale (Data-Based)**
+*Cite 3 specific metrics from your scorecard that justify this decision.*
 * **Metric A:** (e.g., "Our JS Bundle was 40% smaller than the nearest competitor.")
 * **Metric B:** (e.g., "Documentation score was 5/5, which is critical for our team.")
 * **Metric C:** (e.g., "HMR was instant, reducing friction during UI iteration.")
 
-**3. The Recognized Risks**
-*Admit the weak point of your chosen stack and how you will mitigate it.*
+**4. Consequences and Risks**
+*Identify trade-offs, known risks, and how your team will mitigate them.*
 > Example: "The biggest risk with this stack is the smaller community. We will mitigate this by relying heavily on the official Discord and keeping our dependencies minimal to avoid abandoned libraries."
 
-**4. The Runner-Up**
-*Briefly explain why the 2nd place stack lost.*
+**5. Alternatives Considered**
+*Briefly explain why the 2nd place stack was not selected.*
 > Example: "React was a close second due to its massive ecosystem, but the initial configuration complexity and the high boilerplate code resulted in a 20% slower implementation time during the bakeoff."
 
 ---
@@ -104,5 +110,5 @@ Write a 1-page document (or Markdown file) using the template below.
 | Criteria | Proficient | Needs Improvement |
 | :--- | :--- | :--- |
 | **Data Usage** | Decision is referenced directly against recorded Bakeoff metrics (Velocity, LCP, etc.). | Decision is based entirely on "feeling" or "it was easy," ignoring the recorded data. |
-| **Risk Assessment** | Identifies a legitimate weakness in the chosen stack (honest assessment). | Claims the chosen stack is perfect with no downsides. |
-| **Clarity** | The "Verdict" is concise and professional. | The reasoning is rambling or unclear. |
+| **Risk Assessment** | Identifies legitimate trade-offs and mitigation steps in ADR consequences. | Claims the chosen stack is perfect with no downsides. |
+| **Clarity** | The ADR decision statement is concise and professional. | The reasoning is rambling or unclear. |

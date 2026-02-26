@@ -10,15 +10,16 @@ slug: unit3
 
 ## Prepare
 
-- [Week 9 Exploration](../../prepare/unit2b)
-- [Week 10 Exploration](../../prepare/unit2b)
-- [Week 11 Exploration](../../prepare/unit2b)
+- [Week 9 Exploration](../../prepare/unit3a)
+- [Week 10 Exploration](../../prepare/unit3b)
+- [Week 11 Exploration](../../prepare/unit3c)
 
 ## Ponder
 
 - [Post Mortem](../../ponder/post-mortem)
+- [Technical documentation](../../ponder/documentation)
 - [Deployment strategies]()
-
+- [Peer Review](../../ponder/peer-review)
 
 ## Prove
 
