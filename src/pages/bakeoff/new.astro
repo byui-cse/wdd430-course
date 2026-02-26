@@ -4,9 +4,10 @@ import NewProject from "../../components/bakeoff/NewProject.svelte";
 import Login from "../../components/bakeoff/Login.svelte";
 ---
 
-<BaseLayout>
+<BaseLayout title="New Project Bakeoff Submission">
   <h2>Project Bakeoff Reporting</h2>
   <Login client:load>
+    <!-- @ts-expect-error -->
     <NewProject client:load />
   </Login>
 </BaseLayout>

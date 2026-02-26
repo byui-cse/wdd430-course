@@ -82,7 +82,9 @@
         rows="8"
         bind:value={membersText}
         disabled={isSubmitting}
-        placeholder="Alice\nBob\nCharlie"
+        placeholder="Alice
+Bob
+Charlie"
       ></textarea>
       <small>{parsedMembers.length} unique members</small>
     </div>

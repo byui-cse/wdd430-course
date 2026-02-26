@@ -2,7 +2,6 @@
   import { supabase, initializeSupabase } from "../../lib/supabase.ts";
   import { onMount } from "svelte";
 
-  /** @type {import('svelte').Snippet} */
   let { children } = $props();
 
   let passcode = $state("");
@@ -91,7 +90,7 @@
     </form>
   </div>
 {:else}
-  {@render children()}
+  {@render children?.()}
 
   <button onclick={logout} class="logout-btn">
     <span class="lock-small">🔒</span> Lock App

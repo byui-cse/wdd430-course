@@ -4,9 +4,10 @@ import Login from "../../components/bakeoff/Login.svelte";
 import TeamDetails from "../../components/peer-review/TeamDetails.svelte";
 ---
 
-<BaseLayout>
+<BaseLayout title="Peer Review Team Details">
   <h2>Peer Review Reporting</h2>
   <Login client:load>
-    <TeamDetails client:only />
+    <!-- @ts-expect-error -->
+    <TeamDetails client:load />
   </Login>
 </BaseLayout>

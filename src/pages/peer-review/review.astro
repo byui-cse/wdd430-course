@@ -4,9 +4,10 @@ import Login from "../../components/bakeoff/Login.svelte";
 import ReviewForm from "../../components/peer-review/ReviewForm.svelte";
 ---
 
-<BaseLayout>
+<BaseLayout title="Submit Peer Review">
   <h2>Peer Review Reporting</h2>
   <Login client:load>
-    <ReviewForm client:only />
+    <!-- @ts-expect-error -->
+    <ReviewForm client:load />
   </Login>
 </BaseLayout>
