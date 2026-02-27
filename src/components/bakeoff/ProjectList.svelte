@@ -1,5 +1,10 @@
 <script>
   import { supabase } from "../../lib/supabase.ts";
+  import {
+    getSemesterOptions,
+    getStoredSemesterCode,
+    storeSemesterCode
+  } from "../../lib/semester.ts";
 
   /**
    * @typedef {Object} Project
@@ -18,6 +23,8 @@
 
   /** @type {Project[]} */
   let projects = $state([]);
+  let semesterOptions = getSemesterOptions();
+  let selectedSemester = $state(getStoredSemesterCode());
   let loading = $state(true);
   let error = $state("");
 
@@ -28,6 +35,7 @@
         const { data, error: err } = await supabase
           .from("projects")
           .select("*")
+          .eq("semester_code", selectedSemester)
           .order("created_at", { ascending: false });
 
         if (err) throw err;
@@ -41,6 +49,11 @@
     }
     fetchProjects();
   });
+
+  function handleSemesterChange(event) {
+    selectedSemester = event.currentTarget.value;
+    storeSemesterCode(selectedSemester);
+  }
 
   // Simple helper to format dates
   function formatDate(dateString) {
@@ -59,9 +72,23 @@
       <h2>Active Bakeoffs</h2>
       <p>Select a project to view scorecards or start a new comparison.</p>
     </div>
-    <a href="/bakeoff/new" class="add-btn">
-      <span class="plus">+</span> New Project
-    </a>
+    <div class="header-actions">
+      <div class="semester-picker">
+        <label for="semester-filter">Semester</label>
+        <select
+          id="semester-filter"
+          value={selectedSemester}
+          onchange={handleSemesterChange}
+        >
+          {#each semesterOptions as option (option.code)}
+            <option value={option.code}>{option.code}</option>
+          {/each}
+        </select>
+      </div>
+      <a href="/bakeoff/new" class="add-btn">
+        <span class="plus">+</span> New Project
+      </a>
+    </div>
   </div>
 
   {#if loading}
@@ -121,6 +148,29 @@
     margin-bottom: 2rem;
     border-bottom: 1px solid #f3f4f6;
     padding-bottom: 1rem;
+  }
+  .header-actions {
+    display: flex;
+    align-items: end;
+    gap: 0.75rem;
+  }
+  .semester-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .semester-picker label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 700;
+  }
+  .semester-picker select {
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    padding: 0.45rem 0.55rem;
+    font-size: 0.85rem;
+    color: #374151;
+    background: #fff;
   }
 
   .header-row h2 {

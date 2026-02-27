@@ -6,6 +6,14 @@
    * @property {string} name
    * @property {string} description
    * @property {string} created_at
+   * @property {string | null} team_id
+   * @property {string | null} live_demo_url
+   */
+
+  /**
+   * @typedef {Object} Team
+   * @property {string} id
+   * @property {string} team_name
    */
 
   /**
@@ -31,36 +39,49 @@
 
   /** @type {Project | null} */
   let project = $state(null);
+  /** @type {Team[]} */
+  let teams = $state([]);
   /** @type {ScorecardSummary[]} */
   let scorecards = $state([]);
   let loading = $state(true);
   let error = $state("");
+  let saveError = $state("");
+  let isSaving = $state(false);
+  let selectedTeamId = $state("");
+  let liveDemoUrl = $state("");
 
   // Fetch Data on Mount
   $effect(() => {
     async function loadData() {
       try {
-        // 1. Fetch Project Details
-        const { data: projData, error: projError } = await supabase
-          .from("projects")
-          .select("*")
-          .eq("id", projectId)
-          .single();
+        const [
+          { data: projData, error: projError },
+          { data: scoreData, error: scoreError },
+          { data: teamsData, error: teamsError }
+        ] = await Promise.all([
+          supabase.from("projects").select("*").eq("id", projectId).single(),
+          supabase
+            .from("scorecards")
+            .select(
+              "id, stack_name, scorable_by, date_scored, final_score_snapshot"
+            )
+            .eq("project_id", projectId)
+            .order("final_score_snapshot", { ascending: false }),
+          supabase
+            .from("peer_review_teams")
+            .select("id, team_name")
+            .order("team_name", { ascending: true })
+        ]);
 
         if (projError) throw projError;
-        project = projData;
-
-        // 2. Fetch Scorecards (Ordered by Highest Score)
-        const { data: scoreData, error: scoreError } = await supabase
-          .from("scorecards")
-          .select(
-            "id, stack_name, scorable_by, date_scored, final_score_snapshot"
-          )
-          .eq("project_id", projectId)
-          .order("final_score_snapshot", { ascending: false });
-
         if (scoreError) throw scoreError;
+        if (teamsError) throw teamsError;
+
+        project = projData;
+        selectedTeamId = projData.team_id || "";
+        liveDemoUrl = projData.live_demo_url || "";
         scorecards = scoreData || [];
+        teams = teamsData || [];
       } catch (err) {
         console.error("Error loading project details:", err);
         error = "Failed to load project details.";
@@ -78,6 +99,34 @@
       day: "numeric",
       year: "numeric"
     });
+  }
+
+  async function saveProjectMetadata(event) {
+    event.preventDefault();
+    if (!project) return;
+
+    saveError = "";
+    isSaving = true;
+
+    try {
+      const { data, error: updateError } = await supabase
+        .from("projects")
+        .update({
+          team_id: selectedTeamId || null,
+          live_demo_url: liveDemoUrl.trim() || null
+        })
+        .eq("id", project.id)
+        .select("*")
+        .single();
+
+      if (updateError) throw updateError;
+      project = data;
+    } catch (err) {
+      console.error("Error updating project metadata:", err);
+      saveError = err.message || "Failed to update project metadata.";
+    } finally {
+      isSaving = false;
+    }
   }
 
   // Helper to determine color class based on score
@@ -114,6 +163,13 @@
         <p class="description">
           {project.description || "No description available."}
         </p>
+        {#if project.live_demo_url}
+          <p class="demo-link-row">
+            <a href={project.live_demo_url} target="_blank" rel="noreferrer"
+              >Open Live Demo</a
+            >
+          </p>
+        {/if}
       </div>
       <div class="actions">
         <a
@@ -123,6 +179,43 @@
           <span class="icon">+</span> Evaluate New Stack
         </a>
       </div>
+    </div>
+
+    <div class="metadata-section">
+      <h2>Project Peer Review Setup</h2>
+      <form onsubmit={saveProjectMetadata} class="metadata-form">
+        <div class="form-group">
+          <label for="project-live-demo">Live Demo URL</label>
+          <input
+            id="project-live-demo"
+            type="url"
+            bind:value={liveDemoUrl}
+            placeholder="https://example.com"
+            disabled={isSaving}
+          />
+        </div>
+        <div class="form-group">
+          <label for="project-team">Peer Review Team</label>
+          <select
+            id="project-team"
+            bind:value={selectedTeamId}
+            disabled={isSaving}
+          >
+            <option value="">No team attached yet</option>
+            {#each teams as team (team.id)}
+              <option value={team.id}>{team.team_name}</option>
+            {/each}
+          </select>
+        </div>
+        <div class="metadata-actions">
+          <button type="submit" class="primary-btn" disabled={isSaving}>
+            {isSaving ? "Saving..." : "Save Project Setup"}
+          </button>
+        </div>
+        {#if saveError}
+          <p class="save-error">{saveError}</p>
+        {/if}
+      </form>
     </div>
 
     <div class="results-section">
@@ -237,6 +330,74 @@
     max-width: 40rem;
     margin: 0;
     line-height: 1.6;
+  }
+  .demo-link-row {
+    margin: 0.75rem 0 0;
+  }
+  .demo-link-row a {
+    color: #4f46e5;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .demo-link-row a:hover {
+    text-decoration: underline;
+  }
+
+  .metadata-section {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    background: #fff;
+  }
+  .metadata-section h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.2rem;
+    color: #111827;
+  }
+  .metadata-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  @media (min-width: 768px) {
+    .metadata-form {
+      grid-template-columns: 1fr 1fr auto;
+      align-items: end;
+    }
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .form-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #374151;
+  }
+  .form-group input,
+  .form-group select {
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.95rem;
+  }
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+  .metadata-actions {
+    display: flex;
+    align-items: center;
+  }
+  .save-error {
+    margin: 0;
+    color: #b91c1c;
+    font-size: 0.9rem;
+    grid-column: 1 / -1;
   }
 
   .primary-btn {

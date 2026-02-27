@@ -175,3 +175,54 @@ on public.peer_reviews
 for all
 using ( public.authorize_bakeoff() )
 with check ( public.authorize_bakeoff() );
+
+-- ============================================
+-- Project -> Team linking + project review queue
+-- ============================================
+
+alter table public.projects
+  add column if not exists team_id uuid references public.peer_review_teams(id) on delete set null,
+  add column if not exists live_demo_url text,
+  add column if not exists semester_code text;
+
+create index if not exists idx_projects_team_id on public.projects(team_id);
+create index if not exists idx_projects_semester_code on public.projects(semester_code);
+
+alter table public.peer_review_teams
+  add column if not exists semester_code text;
+
+create index if not exists idx_peer_review_teams_semester_code
+  on public.peer_review_teams(semester_code);
+
+create table if not exists public.project_peer_reviews (
+  id uuid default gen_random_uuid() primary key,
+  created_at timestamp with time zone default now() not null,
+  project_id uuid references public.projects(id) on delete cascade not null,
+  team_id uuid references public.peer_review_teams(id) on delete set null,
+  reviewer_name text not null,
+  ux_rating numeric not null check (ux_rating >= 1 and ux_rating <= 5),
+  ui_rating numeric not null check (ui_rating >= 1 and ui_rating <= 5),
+  usability_rating numeric not null check (usability_rating >= 1 and usability_rating <= 5),
+  bugs_found text,
+  likes text,
+  dislikes text,
+  suggestions text,
+  additional_notes text
+);
+
+alter table public.project_peer_reviews
+  add column if not exists reviewed_by_team boolean not null default false,
+  add column if not exists reviewed_at timestamp with time zone;
+
+create index if not exists idx_project_peer_reviews_project_id
+  on public.project_peer_reviews(project_id);
+create index if not exists idx_project_peer_reviews_created_at
+  on public.project_peer_reviews(created_at desc);
+
+alter table public.project_peer_reviews enable row level security;
+
+create policy "Passcode required for project_peer_reviews"
+on public.project_peer_reviews
+for all
+using ( public.authorize_bakeoff() )
+with check ( public.authorize_bakeoff() );

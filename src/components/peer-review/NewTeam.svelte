@@ -1,8 +1,14 @@
 <script>
   import { supabase } from "../../lib/supabase.ts";
+  import {
+    getSemesterOptions,
+    getStoredSemesterCode
+  } from "../../lib/semester.ts";
 
   let teamName = $state("");
   let membersText = $state("");
+  let semesterCode = $state(getStoredSemesterCode());
+  let semesterOptions = getSemesterOptions();
   let isSubmitting = $state(false);
   let error = $state("");
 
@@ -39,6 +45,7 @@
         .insert([
           {
             team_name: teamName.trim(),
+            semester_code: semesterCode,
             members: parsedMembers
           }
         ])
@@ -89,12 +96,21 @@ Charlie"
       <small>{parsedMembers.length} unique members</small>
     </div>
 
+    <div class="form-group">
+      <label for="semester">Semester</label>
+      <select id="semester" bind:value={semesterCode} disabled={isSubmitting}>
+        {#each semesterOptions as option (option.code)}
+          <option value={option.code}>{option.code}</option>
+        {/each}
+      </select>
+    </div>
+
     {#if error}
       <div class="error-banner">⚠️ {error}</div>
     {/if}
 
     <div class="actions">
-      <a href="/peer-review/" class="cancel-link">Cancel</a>
+      <a href="/peer-review/teams" class="cancel-link">Cancel</a>
       <button type="submit" class="submit-btn" disabled={isSubmitting}>
         {#if isSubmitting}
           <span class="spinner"></span> Creating...
@@ -149,6 +165,7 @@ Charlie"
     color: #374151;
   }
   input,
+  select,
   textarea {
     width: 100%;
     border-radius: 0.5rem;
@@ -158,6 +175,7 @@ Charlie"
     box-sizing: border-box;
   }
   input:focus,
+  select:focus,
   textarea:focus {
     outline: none;
     border-color: #4f46e5;

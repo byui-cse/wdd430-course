@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Login from "../../components/bakeoff/Login.svelte";
+import TeamList from "../../components/peer-review/TeamList.svelte";
+---
+
+<BaseLayout title="Peer Review Teams">
+  <h2>Peer Review Reporting</h2>
+  <Login client:load>
+    <!-- @ts-expect-error -->
+    <TeamList client:load />
+  </Login>
+</BaseLayout>

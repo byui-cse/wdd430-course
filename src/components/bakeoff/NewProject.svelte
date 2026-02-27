@@ -1,5 +1,9 @@
 <script>
   import { supabase } from "../../lib/supabase.ts";
+  import {
+    getSemesterOptions,
+    getStoredSemesterCode
+  } from "../../lib/semester.ts";
   /**
    * @typedef {Object} Props
    * @property {import('@supabase/supabase-js').SupabaseClient} supabase
@@ -9,8 +13,32 @@
 
   let name = $state("");
   let description = $state("");
+  let semesterCode = $state(getStoredSemesterCode());
+  let semesterOptions = getSemesterOptions();
+  let teamId = $state("");
+  let liveDemoUrl = $state("");
+  let teams = $state([]);
   let isSubmitting = $state(false);
   let error = $state("");
+
+  $effect(() => {
+    async function loadTeams() {
+      const { data, error: queryError } = await supabase
+        .from("peer_review_teams")
+        .select("id, team_name")
+        .eq("semester_code", semesterCode)
+        .order("team_name", { ascending: true });
+
+      if (queryError) {
+        console.error("Error loading teams:", queryError);
+        return;
+      }
+
+      teams = data || [];
+    }
+
+    loadTeams();
+  });
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -21,7 +49,15 @@
       // 1. Insert the new project
       const { data, error: insertError } = await supabase
         .from("projects")
-        .insert([{ name, description }])
+        .insert([
+          {
+            name,
+            description,
+            semester_code: semesterCode,
+            team_id: teamId || null,
+            live_demo_url: liveDemoUrl.trim() || null
+          }
+        ])
         .select("*")
         .single();
 
@@ -66,6 +102,36 @@
         placeholder="What are the key requirements? (e.g. Must support SEO, High interactivity...)"
         disabled={isSubmitting}
       ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="semester">Semester</label>
+      <select id="semester" bind:value={semesterCode} disabled={isSubmitting}>
+        {#each semesterOptions as option (option.code)}
+          <option value={option.code}>{option.code}</option>
+        {/each}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="live-demo-url">Live Demo URL</label>
+      <input
+        type="url"
+        id="live-demo-url"
+        bind:value={liveDemoUrl}
+        placeholder="https://example.com"
+        disabled={isSubmitting}
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="team">Peer Review Team</label>
+      <select id="team" bind:value={teamId} disabled={isSubmitting}>
+        <option value="">No team attached yet</option>
+        {#each teams as team (team.id)}
+          <option value={team.id}>{team.team_name}</option>
+        {/each}
+      </select>
     </div>
 
     {#if error}
@@ -140,6 +206,7 @@
   }
 
   input,
+  select,
   textarea {
     display: block;
     width: 100%;
@@ -154,6 +221,7 @@
   }
 
   input:focus,
+  select:focus,
   textarea:focus {
     outline: none;
     border-color: #4f46e5;
@@ -161,6 +229,7 @@
   }
 
   input:disabled,
+  select:disabled,
   textarea:disabled {
     background-color: #f3f4f6;
     cursor: not-allowed;

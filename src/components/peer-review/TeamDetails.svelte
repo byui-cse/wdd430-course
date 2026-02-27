@@ -141,7 +141,7 @@
     <div class="error-banner">⚠️ {error}</div>
   {:else if team}
     <nav class="breadcrumb">
-      <a href="/peer-review/">Teams</a>
+      <a href="/peer-review/teams">Teams</a>
       <span class="separator">/</span>
       <span class="current">{team.team_name}</span>
     </nav>

@@ -1,13 +1,40 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Login from "../../components/bakeoff/Login.svelte";
-import TeamList from "../../components/peer-review/TeamList.svelte";
+import ProjectReviewList from "../../components/peer-review/ProjectReviewList.svelte";
 ---
 
-<BaseLayout title="Peer Review Reporting">
+<BaseLayout title="Project Review Queue">
   <h2>Peer Review Reporting</h2>
+  <p>
+    Once you have formed a team and selected a project to move forward, you need
+    to make a couple of changes to allow peer review of your project.
+  </p>
+  <ol>
+    <li>
+      Use the <a href="/peer-review/teams">Manage Teams</a> link to create a Team
+      in this system.
+    </li>
+    <li>
+      Visit the <a href="/bakeoff">Bakeoff Projects</a> page to attach a team and
+      the URL to the live version of your application to your project.
+    </li>
+  </ol>
+  <p>
+    Once this is done you should see you project listed below. You will be
+    expected to submit a peer review each week for Weeks 10-12.
+  </p>
+  <p>
+    Teams will be expected to carefully examine each review and mark it as
+    reviewed by the team to show that they have read and considered the
+    feedback.
+  </p>
+  <p>
+    You will also be expected to review your teammates performance on your team
+    in Week 13.
+  </p>
   <Login client:load>
     <!-- @ts-expect-error -->
-    <TeamList client:load />
+    <ProjectReviewList client:load />
   </Login>
 </BaseLayout>
