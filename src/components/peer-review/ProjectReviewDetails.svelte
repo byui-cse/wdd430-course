@@ -22,9 +22,14 @@
       return {
         count: 0,
         needsFollowUpCount: 0,
+        avgScore: 0,
+        maxScore: 0,
         avgUx: 0,
+        maxUx: 0,
         avgUi: 0,
+        maxUi: 0,
         avgUsability: 0,
+        maxUsability: 0,
         lastReviewAt: null
       };
     }
@@ -39,13 +44,38 @@
       { ux: 0, ui: 0, usability: 0 }
     );
 
+    const maxUx = Math.max(
+      ...reviews.map((review) => Number(review.ux_rating || 0))
+    );
+    const maxUi = Math.max(
+      ...reviews.map((review) => Number(review.ui_rating || 0))
+    );
+    const maxUsability = Math.max(
+      ...reviews.map((review) => Number(review.usability_rating || 0))
+    );
+
+    const perReviewScores = reviews.map((review) => {
+      const ux = Number(review.ux_rating || 0);
+      const ui = Number(review.ui_rating || 0);
+      const usability = Number(review.usability_rating || 0);
+      return (ux + ui + usability) / 3;
+    });
+
+    const totalScore = perReviewScores.reduce((sum, score) => sum + score, 0);
+    const maxScore = Math.max(...perReviewScores);
+
     return {
       count: reviews.length,
       needsFollowUpCount: reviews.filter((review) => !review.reviewed_by_team)
         .length,
+      avgScore: totalScore / reviews.length,
+      maxScore,
       avgUx: totals.ux / reviews.length,
+      maxUx,
       avgUi: totals.ui / reviews.length,
+      maxUi,
       avgUsability: totals.usability / reviews.length,
+      maxUsability,
       lastReviewAt: reviews[0]?.created_at || null
     };
   });
@@ -192,16 +222,26 @@
         <strong>{summary.needsFollowUpCount}</strong>
       </div>
       <div class="summary-card">
-        <span class="label">Avg UX</span>
-        <strong>{summary.avgUx.toFixed(2)}</strong>
+        <span class="label">UX (Avg/Max)</span>
+        <strong>{summary.avgUx.toFixed(2)} / {summary.maxUx.toFixed(2)}</strong>
       </div>
       <div class="summary-card">
-        <span class="label">Avg UI</span>
-        <strong>{summary.avgUi.toFixed(2)}</strong>
+        <span class="label">UI (Avg/Max)</span>
+        <strong>{summary.avgUi.toFixed(2)} / {summary.maxUi.toFixed(2)}</strong>
       </div>
       <div class="summary-card">
-        <span class="label">Avg Usability</span>
-        <strong>{summary.avgUsability.toFixed(2)}</strong>
+        <span class="label">Usability (Avg/Max)</span>
+        <strong
+          >{summary.avgUsability.toFixed(2)} / {summary.maxUsability.toFixed(
+            2
+          )}</strong
+        >
+      </div>
+      <div class="summary-card">
+        <span class="label">Score (Avg/Max)</span>
+        <strong
+          >{summary.avgScore.toFixed(2)} / {summary.maxScore.toFixed(2)}</strong
+        >
       </div>
       <div class="summary-card">
         <span class="label">Last Review</span>
@@ -365,7 +405,7 @@
   }
   @media (min-width: 768px) {
     .summary-grid {
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(7, 1fr);
     }
   }
   .summary-card {
