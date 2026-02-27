@@ -1,0 +1,398 @@
+---
+title: Testing Code - Choosing What to Test
+description: This assignment helps you decide what belongs in unit, integration, and end-to-end tests, and introduces practical mocking strategies.
+time: 1-2 hours
+aiUsage: green
+---
+import Details from '../../components/Details.astro'
+
+## Introduction
+
+In this testing assignment, you will focus less on *how to write a test* and more on *what to test with each kind of test*.
+
+Assume you are already familiar with:
+
+- code testing fundamentals from the article readings,
+- If you need a refresher you can review this [testing fundamentals exercise](https://wdd360.netlify.app/ponder/testing/),
+- and basic Vitest + Playwright syntax.
+
+By the end of this assignment, you should be able to:
+
+- Decide whether behavior belongs in a unit, integration, or E2E test.
+- Explain what a unit test is actually verifying.
+- Use mocks intentionally (and recognize when mocking hurts confidence).
+- Design a small, realistic test strategy for a web feature.
+
+## **01** Test Types: What Goes Where?
+
+A common mistake is trying to test everything at one layer.
+
+Instead, use each test type for a specific purpose:
+
+### Unit Tests (Vitest)
+
+Best for verifying **business logic in isolation**.
+
+Examples:
+
+- Price calculations and discount rules
+- Data validation rules
+- Utility functions and formatters
+- Pure mapping/transformation logic
+
+### Integration Tests
+
+Best for verifying **collaboration between parts**.
+
+Examples:
+
+- UI form + validation + submit handler
+- Route + loader + rendered state
+- Component + API client wiring
+- Error message shown when API returns failure
+
+### End-to-End (E2E) Tests (Playwright)
+
+Best for verifying **critical user journeys in a real browser**.
+
+Examples:
+
+- Login and redirect flow
+- Add item to cart and checkout
+- Submit assignment and confirm success page
+
+> Rule of thumb: test business rules deeply with unit tests, interactions with integration tests, and only key high-value paths with E2E tests.
+
+## **02** What Are We Testing *For* in Unit Tests?
+
+A strong unit test is not checking random lines of code. It checks behavior.
+
+For unit tests, focus on:
+
+1. **Correct output** for valid input.
+2. **Edge cases** (empty values, extremes, boundaries).
+3. **Failure behavior** (throws/rejects/returns error object).
+4. **Branch coverage of important decisions** (if/else logic).
+
+You are generally *not* testing:
+
+- browser rendering,
+- framework internals,
+- third-party libraries,
+- implementation details that might change during refactor.
+
+### Example: Testing behavior, not implementation
+
+```js
+// discount.js
+export function calculateDiscount(total, isMember) {
+  if (total < 0) throw new Error('total must be non-negative')
+  if (total === 0) return 0
+
+  if (isMember) return total * 0.15
+  return total * 0.05
+}
+```
+
+```js
+// discount.test.js
+import { describe, it, expect } from 'vitest'
+import { calculateDiscount } from './discount'
+
+describe('calculateDiscount', () => {
+  it('applies member discount', () => {
+    expect(calculateDiscount(100, true)).toBe(15)
+  })
+
+  it('applies non-member discount', () => {
+    expect(calculateDiscount(100, false)).toBe(5)
+  })
+
+  it('returns 0 when total is 0', () => {
+    expect(calculateDiscount(0, false)).toBe(0)
+  })
+
+  it('throws for negative totals', () => {
+    expect(() => calculateDiscount(-1, true)).toThrow()
+  })
+})
+```
+
+Notice we never assert internal variables or function call counts. We only verify contract/behavior.
+
+## **03** Mocking: When It Helps and When It Hurts
+
+Mocking means replacing real dependencies (API calls, DB access, timers, etc.) with controlled fakes in tests.
+
+### Good reasons to mock
+
+- Dependency is slow or flaky.
+- Dependency is expensive or external (payment API, email service).
+- You need deterministic behavior for edge/failure scenarios.
+
+### Common mocking problems
+
+- **Over-mocking**: tests pass but app fails in real usage.
+- **Brittle tests**: tied to internal calls rather than behavior.
+- **False confidence**: mock setup does not match real API behavior.
+- **High maintenance**: every refactor breaks tests for the wrong reason.
+
+### How to minimize mocking
+
+1. Prefer testing pure functions directly (no mock needed).
+2. Move business logic out of framework-heavy code into testable units.
+3. Use integration tests for real collaboration between modules.
+4. Mock only true external boundaries (network, payment provider, email service).
+5. Use realistic test fixtures that match real data shapes.
+
+### Example: Minimal boundary mock
+
+```js
+// userService.js
+export async function loadUserSummary(fetchUser) {
+  const user = await fetchUser()
+  return `${user.firstName} ${user.lastName}`
+}
+```
+
+```js
+// userService.test.js
+import { describe, it, expect, vi } from 'vitest'
+import { loadUserSummary } from './userService'
+
+describe('loadUserSummary', () => {
+  it('formats name from fetched user', async () => {
+    const fetchUser = vi.fn().mockResolvedValue({
+      firstName: 'Ada',
+      lastName: 'Lovelace'
+    })
+
+    await expect(loadUserSummary(fetchUser)).resolves.toBe('Ada Lovelace')
+  })
+})
+```
+
+Here we mock only the external boundary (`fetchUser`) and keep logic simple.
+
+> **What is a "boundary"?**
+> In testing, a boundary is the edge where your code talks to something outside of your core logic (for example: network APIs, databases, file system, browser storage, current time, or third-party services).
+> These are common places to mock because they are slower, less deterministic, or outside your control.
+> Your own decision-making/business logic inside the module is usually **not** a boundary and should normally be tested directly without mocks.
+
+## **04** Code Structure and Testability
+
+How you structure code has a huge impact on test quality.
+
+When business logic is tangled directly with framework code, network calls, and global state, tests often require heavy mocking.
+When business logic is separated from side effects, tests become simpler and more reliable.
+
+### Architecture choices that usually increase mocking
+
+- Large functions that do UI updates, API calls, and business rules all in one place.
+- Hidden dependencies imported directly deep inside modules.
+- Tight coupling to framework/global APIs (`window`, `document`, local storage, route state) in core logic.
+- Classes/modules that create their own dependencies instead of receiving them.
+
+### Architecture choices that usually decrease mocking
+
+- **Pure core logic**: keep calculations/decisions in pure functions.
+- **Dependency injection**: pass dependencies (API client, clock, storage) as arguments.
+- **Thin adapters**: isolate framework/browser APIs in small boundary modules.
+- **Clear layers**: domain logic → application/service layer → infrastructure/UI.
+
+### Organize for easier testing
+
+1. Put rules and decisions in functions that take data and return data.
+2. Keep side effects at boundaries (network, storage, DOM, timers).
+3. Test pure rules with unit tests (no mocks).
+4. Test boundaries and wiring with integration tests (minimal mocks).
+5. Cover critical workflows with a small number of E2E tests.
+
+### Example: Refactoring to reduce mocks
+
+Before (harder to test):
+
+```js
+export async function submitCheckout(formEl) {
+  const cartTotal = Number(document.querySelector('#total')?.textContent ?? 0)
+  if (cartTotal <= 0) return { ok: false, reason: 'empty-cart' }
+
+  const res = await fetch('/api/checkout', {
+    method: 'POST',
+    body: JSON.stringify({ total: cartTotal })
+  })
+
+  return res.ok ? { ok: true } : { ok: false, reason: 'api-failed' }
+}
+```
+
+After (easier to test):
+
+```js
+export function validateCheckout(total) {
+  if (total <= 0) return { ok: false, reason: 'empty-cart' }
+  return { ok: true }
+}
+
+export async function submitCheckout(total, postCheckout) {
+  const valid = validateCheckout(total)
+  if (!valid.ok) return valid
+
+  const result = await postCheckout({ total })
+  return result.ok ? { ok: true } : { ok: false, reason: 'api-failed' }
+}
+```
+
+Now you can:
+
+- Unit test `validateCheckout` with zero mocks.
+- Unit test `submitCheckout` with one boundary mock (`postCheckout`).
+- Integration test the UI separately to verify form wiring.
+
+### Mini Exercise: Refactor for testability
+
+Refactor the function below to reduce mocking and improve test clarity.
+
+```js
+export async function placeOrder() {
+  const total = Number(document.querySelector('#total')?.textContent ?? 0)
+  const token = localStorage.getItem('token')
+
+  if (!token) return { ok: false, reason: 'not-authenticated' }
+  if (total <= 0) return { ok: false, reason: 'empty-cart' }
+
+  const response = await fetch('/api/orders', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ total })
+  })
+
+  if (!response.ok) return { ok: false, reason: 'api-failed' }
+  return { ok: true }
+}
+```
+
+Your tasks:
+
+1. Refactor so core business logic does not depend directly on `document`, `localStorage`, or `fetch`.
+2. Identify at least **2 unit tests** and **2 integration tests** you would write after refactoring.
+3. For each test, explain in one sentence why it belongs at that test layer.
+
+<Details summary="One possible direction (open after attempting)">
+
+- Extract pure validation logic into functions like `validateOrder(total, token)`.
+- Move browser/API concerns into small adapter functions (ex: `getOrderContext`, `postOrder`).
+- Inject dependencies into `placeOrder(total, token, postOrder)` so unit tests can mock only `postOrder`.
+
+Possible unit test targets:
+
+- `validateOrder` returns `not-authenticated` when token missing.
+- `validateOrder` returns `empty-cart` when total is 0.
+
+Possible integration test targets:
+
+- Checkout page reads total + token and calls order submission path correctly.
+- API failure displays error message to user.
+
+</Details>
+
+## **05** Assignment: Test Strategy Decisions
+
+For each scenario below, decide **unit**, **integration**, or **E2E** as the *best primary test type*.
+
+Then write a 1-2 sentence justification.
+
+1. A function that computes shipping price from weight, distance, and shipping tier.
+2. A registration page that validates password rules and then submits to `/api/register`.
+3. A user logs in, creates a task, marks it complete, and sees it in “Completed”.
+4. A utility that normalizes phone numbers.
+5. A checkout button should disable while payment request is pending.
+
+<Details summary="Sample classifications (open after attempting)">
+
+1. **Unit** — pure pricing rules; many edge cases; no UI required.
+2. **Integration** — validation + submit behavior between UI and API layer.
+3. **E2E** — core user journey across auth, creation, state changes, and UI.
+4. **Unit** — deterministic string transformation logic.
+5. **Integration** — interaction/state behavior in component during async request.
+
+</Details>
+
+## **06** Assignment: Write Focused Tests
+
+### Part A: Unit test design
+
+Given this function:
+
+```js
+export function canSubmitOrder(cartTotal, hasAddress, paymentReady) {
+  if (cartTotal <= 0) return false
+  if (!hasAddress) return false
+  if (!paymentReady) return false
+  return true
+}
+```
+
+Write **4-6 unit tests** that cover:
+
+- happy path,
+- each failing condition,
+- at least one boundary case.
+
+### Part B: Integration test design
+
+You have a `CheckoutForm` that:
+
+- validates required fields,
+- calls `submitOrder`,
+- and displays either success or error UI.
+
+Write an integration test plan (not full code) with:
+
+1. Preconditions,
+2. User actions,
+3. Assertions.
+
+Include at least one success path and one failure path.
+
+### Part C: Mocking reflection
+
+Choose one of your tests and answer:
+
+- What did you mock?
+- Why was mocking necessary (or unnecessary)?
+- How did you keep the test realistic?
+
+## **07** AI Use Guidance for This Assignment
+
+Use AI as a reviewer and brainstorming partner, not just a code generator.
+
+Prompt ideas:
+
+- “Given this function, propose high-value unit test cases with rationale.”
+- “Is this test checking behavior or implementation details? Explain.”
+- “Where should I avoid mocks in this test suite?”
+- “Turn this over-mocked test into a more realistic integration test.”
+
+Quality checklist for AI-generated tests:
+
+- Does each test name describe user-meaningful behavior?
+- Would this test still pass if internal refactoring happens?
+- Are we mocking only true external boundaries?
+- Do we cover failures and edge cases, not only happy paths?
+
+## **08** Deliverable
+
+Submit one document (or markdown file) that includes:
+
+1. Your scenario classifications and justifications from Section 04.
+2. Your Part A unit tests from Section 05.
+3. Your Part B integration test plan from Section 05.
+4. Your Part C mocking reflection.
+5. A short wrap-up (4-6 sentences):
+   - What changed in how you think about testing layers?
+   - Where are you still uncertain?
+
+## Wrap Up
+
+Good test suites are intentional. They do not maximize test count—they maximize confidence. Choosing the right layer, writing behavior-focused assertions, and mocking sparingly are key habits of strong web developers.

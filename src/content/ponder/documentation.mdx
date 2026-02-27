@@ -1,0 +1,57 @@
+---
+title: Engineering Documentation
+description: This activity will guide students through the process of creating comprehensive documentation for their projects, including architecture diagrams, decision logs, API documentation, and deployment instructions.
+time: 1-2 hours
+aiUsage: green
+---
+
+import Details from '../../components/Details.astro'
+
+
+## Senior Engineering Documentation Template
+When you join a new engineering team, one of the first things you will look for is documentation. Good documentation can make the difference between a smooth onboarding experience and a frustrating one. It can also be the difference between a project that is easy to maintain and one that is a nightmare to work with.
+
+Here is a template for the types of documentation that you should aim to create for your Capstone Project. This is not an exhaustive list, but it covers the most important aspects of documentation that will help you and others understand and maintain your project in the future.
+
+1. System Architecture Diagram
+    * Overview: Provide a high-level visual or descriptive flow of how data moves from the Client to the Database.
+    * Infrastructure: Where is the frontend hosted? Where is the backend? How do they communicate?
+2. The "Decision Log" (ADRs)
+One of the most important parts of the 400-level course is justifying choices.
+* Architecture Decision Records (ADRs): For every major tech choice (e.g., choosing Tailwind over CSS-in-JS, or Supabase over a custom Express server), students must document:
+    * Context: What problem were we solving?
+    * Options: What alternatives did we consider?
+    * Decision: What did we choose?
+    * Consequences: What are the trade-offs (e.g., "We chose X for speed, but it will make Y harder later")?
+3. API Documentation
+* Endpoints: List all custom API routes.
+* Request/Response Examples:
+    * POST /api/v1/orders
+    * Payload: `{ "productId": string, "quantity": number }`
+    * Success Response: 201 Created
+* Auth Requirements: Which routes are public vs. protected?
+4. Data Model (Schema)
+* Entity Relationship Diagram (ERD): A visual or list-based representation of the database tables/collections.
+* Validation: What are the constraints? (e.g., "Email must be unique," "Price cannot be negative").
+5. Deployment & Environment Setup
+* Local Setup: A step-by-step guide for a new developer to clone the repo and get it running (e.g., npm install, npm run dev).
+* Environment Variables: A list of required keys (e.g., DATABASE_URL, STRIPE_SECRET_KEY) without the actual values.
+* CI/CD Status: Links to the automated build logs or deployment previews.
+
+Each of these sections should be detailed enough that a new developer (or your future self) could understand the project structure, the rationale behind key decisions, and how to get the project up and running without needing to ask for help. This level of documentation is what separates a good engineer from a great one.
+
+Create a directory in your project called `docs` and add a markdown file for each of the sections listed above. Use diagrams, tables, and code snippets as needed to make the documentation clear and comprehensive. 
+
+>If you are using Swagger or a similar tool for API documentation, you can include the link to the generated documentation in your API Documentation section. However, make sure to also include a human-readable summary of the API endpoints and their usage in the markdown file for easy reference.
+
+```
+├── docs/                # THE LIVING DOCUMENTATION
+│   ├── adrs/            # Architecture Decision Records
+│   ├── api.md           # API endpoints and schemas
+│   ├── system.md        # System architecture and flow
+│   └── setup.md         # Local development instructions
+```
+
+🧪 Documentation Peer Review
+In Week 12, have groups swap documentation.
+The Challenge: Group A must try to follow Group B's "Local Setup" instructions to get Group B's project running on their own machines. If they can't do it within 20 minutes, Group B’s documentation fails. This is a powerful lesson in developer experience (DX).
