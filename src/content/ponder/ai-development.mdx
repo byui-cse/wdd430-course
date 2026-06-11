@@ -1,0 +1,318 @@
+---
+title: AI for Development
+description: This activity introduces practical ways to use AI productively in development, including risk management, context control, token efficiency, and repeatable workflows.
+tags:
+  - ai
+  - development
+  - workflow
+time: 1-2 hours
+aiUsage: green
+---
+
+import Details from '../../components/Details.astro'
+
+## Introduction
+
+AI can make you faster, but only if you stay in control.
+
+When students first start using AI for development, the most common mistake is treating it like an autopilot that can build an entire project without close supervision. That usually leads to code that looks finished but is difficult to explain, debug, test, or maintain.
+
+Your goal is not to avoid AI. Your goal is to use it in a way that improves your thinking instead of replacing it.
+
+By the end of this activity, you should be able to:
+
+- Explain the risks that come with heavy AI-generated code.
+- Manage context so the AI stays focused on the right problem.
+- Reduce wasted tokens by prompting more deliberately.
+- Use a few practical workflows that fit real development tasks.
+
+## **01** Concerns With Heavy AI Code Generation
+
+AI can generate large amounts of code quickly, but speed creates new risks.
+
+### Understanding gap
+
+If you accept code that you cannot explain, you are borrowing complexity you will have to repay later. That debt usually appears during debugging, refactoring, or team collaboration.
+
+### Hidden defects
+
+AI often produces code that is plausible, not proven. It may compile and still be wrong because of incorrect assumptions, edge cases, bad error handling, or security problems.
+
+### Architectural drift
+
+When prompts are written one task at a time with no clear plan, the codebase starts to lose consistency. Naming conventions drift, folder structure gets messy, and patterns change from file to file.
+
+### Dependency inflation
+
+AI frequently reaches for extra libraries even when the platform or framework already provides what is needed. Every added dependency increases maintenance cost and upgrade risk.
+
+### Privacy and data exposure
+
+If you paste secrets, proprietary code, student data, or private business logic into an AI tool without understanding the policy around that tool, you can create a real security problem.
+
+### False confidence
+
+The most dangerous failure mode is not bad code. It is code that sounds correct enough that you stop checking it carefully.
+
+> A useful rule: if AI wrote it, assume it needs review. If you prompted it, you still own the result.
+
+## **02** Managing Context
+
+AI performs much better when the problem is bounded.
+
+Context is everything the model uses to decide what to generate: your prompt, pasted code, error messages, file structure, framework constraints, previous messages, and requested output format. When that context is vague, overloaded, or stale, the quality drops quickly.
+
+### Start with a clear anchor
+
+Give the AI one concrete starting point:
+
+- a file,
+- a function,
+- a failing test,
+- an error message,
+- or a small feature request.
+
+Bad:
+
+```text
+Build the backend for my app.
+```
+
+Better:
+
+```text
+In src/routes/products.js, add server-side pagination to GET /products.
+Keep the existing response shape and update only this route and its tests.
+```
+
+### Supply constraints early
+
+Tell the AI what must not change.
+
+Examples:
+
+- Use the existing Express app structure.
+- Do not add new dependencies.
+- Keep the public API unchanged.
+- Follow the current test style.
+- Only edit files in `src/content/ponder`.
+
+### Keep context local
+
+Do not paste your whole project unless the task genuinely needs it. Most coding work is local. The AI usually needs the closest deciding code, not every related file.
+
+### Refresh when the conversation drifts
+
+Long chats accumulate stale assumptions. When the AI starts repeating itself, forgetting constraints, or editing the wrong surface, reset the conversation with a fresh summary:
+
+1. State the current goal in one sentence.
+2. List the relevant files.
+3. List the constraints.
+4. Include the latest error or expected behavior.
+
+### Use summaries between steps
+
+After planning or debugging, ask for a short summary you can reuse in the next prompt. A good summary is often more valuable than keeping a long conversation alive.
+
+<Details summary="Example context handoff summary">
+
+```text
+Current task: add validation to the POST /orders endpoint.
+Relevant files: src/routes/orders.js, src/services/orderService.js, tests/orders.test.js.
+Constraints: do not change response shape, do not add dependencies, keep validation in the service layer.
+Current failure: missing shippingAddress should return 400 with a useful error message.
+Next step: update the service and tests only.
+```
+
+</Details>
+
+## **03** Efficient Token Use
+
+Tokens are the budget used to send context to the model and receive output. If you waste them on unnecessary code, repeated explanations, or broad prompts, you pay more and often get worse results.
+
+### Ask for the smallest useful change
+
+Instead of asking for a complete rewrite, ask for one narrow improvement.
+
+Bad:
+
+```text
+Refactor my entire authentication system.
+```
+
+Better:
+
+```text
+Review this login handler for error handling and suggest the smallest safe change.
+```
+
+### Prefer diffs over regeneration
+
+If only one function needs to change, provide that function and ask for a patch or replacement. Regenerating full files wastes tokens and increases the chance of unrelated drift.
+
+### Reuse structure
+
+When you find a prompt pattern that works, keep it. Reusable templates reduce both token cost and prompt-writing effort.
+
+Example structure:
+
+```text
+Task:
+Context:
+Constraints:
+Expected output:
+Validation to consider:
+```
+
+### Ask for analysis before code when the problem is unclear
+
+If you are not sure what is wrong, have the AI narrow the problem first. A short diagnostic answer can save multiple failed code generations.
+
+### Avoid repeated file dumps
+
+If the AI already has a correct summary of a file, you do not always need to resend the whole file. Send only the changed area plus a short reminder of the larger context.
+
+### Stop asking for prose you will not use
+
+If you want code, ask for code. If you want a checklist, ask for a checklist. Long explanations can be useful for learning, but they still spend tokens.
+
+> Efficient prompting is not about making prompts short. It is about making every line earn its place.
+
+## **04** Common Workflow Patterns
+
+There is no single best workflow, but some patterns are consistently more reliable than "generate everything and hope it works."
+
+### Pattern A: Spec first, implement second
+
+Use AI to help define requirements, acceptance criteria, edge cases, and constraints before asking for code.
+
+This works well for:
+
+- larger features,
+- team projects,
+- API design,
+- and unfamiliar problem spaces.
+
+### Pattern B: Slice-by-slice implementation
+
+Break a feature into small vertical slices and complete them one at a time.
+
+Example:
+
+1. Create route.
+2. Add validation.
+3. Add service logic.
+4. Add tests.
+5. Refactor names and comments.
+
+This keeps context focused and makes review easier.
+
+### Pattern C: Test or check first
+
+Before asking AI to fix something, identify how you will know the fix worked.
+
+Examples:
+
+- failing unit test,
+- build error,
+- reproducible bug steps,
+- or expected request/response behavior.
+
+This prevents vague prompts like "fix this" and leads to more useful output.
+
+### Pattern D: AI as reviewer
+
+Instead of asking AI to generate code, ask it to review your code for:
+
+- edge cases,
+- readability,
+- missing tests,
+- security concerns,
+- and simpler alternatives.
+
+This often produces better learning because you stay the primary author.
+
+### Pattern E: Summarize and continue
+
+At the end of a session, ask AI to summarize:
+
+- what changed,
+- what remains,
+- open risks,
+- and the next smallest step.
+
+This is especially useful when moving between class sessions or working with teammates.
+
+## **05** Practical Habits
+
+If you want AI to make you more effective instead of more dependent, build these habits:
+
+1. Read generated code before running it.
+2. Run tests or other validation after every meaningful change.
+3. Compare the output against your specification, not against your hopes.
+4. Ask why a solution works, especially when it uses unfamiliar syntax or libraries.
+5. Keep prompts narrow enough that you can review the result confidently.
+6. Treat AI suggestions as drafts until verified.
+
+## **06** Exercise
+
+Use the [Camp Activity Tracker](/camp-planner.zip) project to practice the workflows above. This is a small full-stack app (Svelte frontend, Express API, SQLite backend) with activities, filtering, and status management already built.
+
+### Steps
+
+1. Download the project, extract it, and open it in your code editor. Run `(p)npm install` in the root folder to set up dependencies.
+
+2. **Start the app:**
+   ```bash
+   pnpm dev:full
+   ```
+   Browse to `http://localhost:5173` and explore the existing features.
+
+3. **Choose a small addition** from one of these options:
+   - Add an "activity priority" field and sort/filter by priority.
+   - Add activity duration (hours) and show total hours per status.
+   - Add a "completed by" date field and calculate average completion time.
+   - Add bulk actions (select multiple, mark all done, delete selected).
+
+4. **Write a one-paragraph spec** for your chosen feature. Include:
+   - What the user sees or does.
+   - Which existing features should stay unchanged.
+   - One or two edge cases to consider.
+
+5. **Examine one relevant file** from the project:
+   - Frontend: `src/App.svelte`.
+   - Backend: `server/index.js` for the API endpoints.
+   - Database: `src/data/cabin-tracker.sqlite` if it exists.
+   - Copy a small, focused section (10–20 lines) that shows the current pattern.
+
+6. **Write a prompt** to the AI that includes:
+   - Your one-sentence task.
+   - Your spec from step 3.
+   - The code pattern you copied (to establish consistency).
+   - One clear constraint (e.g., "do not change the API response shape" or "only edit the Svelte component").
+   - Expected output format (e.g., "provide the updated backend route only").
+
+7. **Ask the AI for one piece**, not the full feature. For example:
+   - "Add the database column and migration."
+   - "Add the API endpoint to fetch the data."
+   - "Add the UI component to display the data."
+
+8. **Review the result** and identify at least three things to verify:
+   - Does it follow the current code style and naming?
+   - Does it handle at least one edge case from your spec?
+   - Can you explain what the code does?
+   - Would you need to make any changes before running it?
+
+9. **Write a short reflection** (200–300 words) answering:
+   - Where did AI save you the most time?
+   - Where did you have to make corrections or ask clarifying questions?
+   - Which part of your prompt had the biggest impact on output quality?
+   - If you were to add the rest of the feature, what would you change in your approach?
+
+### Optional team discussion
+
+If you are working through this with classmates, compare:
+- Which options did people choose, and why?
+- How different were the prompts?
+- Which prompts got better results, and what did they include?
+- Where did people's reviews catch issues that AI missed?

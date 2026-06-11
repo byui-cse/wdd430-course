@@ -1,0 +1,29 @@
+{
+  "name": "camp-planner",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k -n api,app \"pnpm dev:server\" \"pnpm dev:app\"",
+    "dev:app": "vite",
+    "dev:server": "node --watch server/index.js",
+    "dev:full": "concurrently -k -n api,app \"pnpm dev:server\" \"pnpm dev:app\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start:server": "node server/index.js",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/node": "^24.12.3",
+    "concurrently": "^10.0.3",
+    "svelte": "^5.55.5",
+    "svelte-check": "^4.4.8",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
