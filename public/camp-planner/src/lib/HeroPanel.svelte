@@ -7,7 +7,7 @@
 
 <section class="hero-panel">
   <div class="hero-copy">
-    <p class="eyebrow">WDD 360 exercise starter</p>
+    <p class="eyebrow">WDD 430 exercise starter</p>
     <h1>Camp activity tracker</h1>
     <p class="intro">
       Students inherit a working interface backed by a local API and SQLite,

@@ -96,6 +96,7 @@ pnpm check
 - Add due-soon highlighting logic
 - Introduce schema migrations for a new field
 - Move API calls out of App.svelte into a dedicated service module while preserving behavior
+- Refactor remaining Svelte 4-style component code to Svelte 5 runes syntax
 
 ## Example AI prompts for students
 

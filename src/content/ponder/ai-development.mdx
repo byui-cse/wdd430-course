@@ -126,6 +126,33 @@ Next step: update the service and tests only.
 
 </Details>
 
+### Use memory for always-on context
+
+Some context should be reused in almost every AI session. Instead of rewriting it each time, keep a small "memory" block that you can paste (or store in project instructions) whenever you start work.
+
+One effective option is an `AGENTS.md` (or similar project instruction file) at the root of your repo. Use it for stable guidance such as project scope, stack/tooling defaults, coding standards, architecture boundaries, required validation commands, and privacy rules. Do not put secrets or temporary task notes there. Most AI harnesses will automatically read from that file when generating code, so it is a powerful way to keep the AI aligned with your project norms and constraints.
+
+Good always-on context includes:
+
+- your tech stack and versions,
+- coding standards (naming, linting, testing style),
+- architecture constraints (folder boundaries, API contracts),
+- security/privacy rules (what must never be shared),
+- and preferred workflow (for example: "plan first, then implement in small patches").
+
+Keep memory concise. Long memory blocks become noise and can reduce output quality.
+
+Practical ways to keep this context in play:
+
+1. Add a short project-level instruction file with coding conventions and non-negotiable constraints.
+2. Keep reusable prompt templates for common tasks like bug fixes, refactors, and test writing.
+3. Save "known-good" summaries after each session (current goal, changed files, open risks, next step).
+4. Include a small safety checklist in prompts (tests to run, no new dependencies, do not change public API).
+
+Memory should evolve as the project evolves. If architecture, dependencies, or team standards change, update your memory so the AI stops following outdated assumptions.
+
+
+
 ## **03** Efficient Token Use
 
 Tokens are the budget used to send context to the model and receive output. If you waste them on unnecessary code, repeated explanations, or broad prompts, you pay more and often get worse results.
@@ -177,6 +204,22 @@ If the AI already has a correct summary of a file, you do not always need to res
 If you want code, ask for code. If you want a checklist, ask for a checklist. Long explanations can be useful for learning, but they still spend tokens.
 
 > Efficient prompting is not about making prompts short. It is about making every line earn its place.
+
+### Keep context that gets added to every prompt lite. 
+
+Review `AGENTS.md` or your project instruction file regularly and remove any outdated or rarely relevant information. If you have a lot of context that is only relevant to certain tasks, consider breaking it into smaller sections that can be added when needed instead of always including it. 
+
+### Start a separate chat for each task or feature.
+
+Keeping sessions short helps keep the context focused and prevents the AI from getting confused by multiple threads of work. It also allows you to keep a clean history for each feature, which can be useful for review and debugging later. Remember that the entire context gets sent with each prompt, so keeping it focused on one task can improve the quality of the output and reduce token costs.
+
+### Use Plan mode before you Agent
+
+If your AI tool has a "Plan" mode or similar feature that allows you to get a structured plan before generating code, use it. This can help you clarify the steps needed to complete a task and ensure that the AI is aligned with your goals before it starts writing code. It can also help you identify potential issues or edge cases early on, which can save time and tokens in the long run.
+
+### Use the right model for the task.
+
+The latest models are often better at understanding complex instructions and generating more accurate code, but they also tend to be more expensive. For simple tasks or when you are still experimenting with prompt structure, a smaller model may be sufficient and more cost-effective. As you get more comfortable with prompting and have a clearer idea of the patterns that work best for your project, you can start using the larger models for the tasks that benefit most from their capabilities.
 
 ## **04** Common Workflow Patterns
 
@@ -273,6 +316,7 @@ Use the [Camp Activity Tracker](/camp-planner.zip) project to practice the workf
    - Add activity duration (hours) and show total hours per status.
    - Add a "completed by" date field and calculate average completion time.
    - Add bulk actions (select multiple, mark all done, delete selected).
+   - Update the Svelte syntax to use the v5 runes-based props and state management.
 
 4. **Write a one-paragraph spec** for your chosen feature. Include:
    - What the user sees or does.
@@ -291,6 +335,10 @@ Use the [Camp Activity Tracker](/camp-planner.zip) project to practice the workf
    - The code pattern you copied (to establish consistency).
    - One clear constraint (e.g., "do not change the API response shape" or "only edit the Svelte component").
    - Expected output format (e.g., "provide the updated backend route only").
+
+>For an example of the importance of providing the patterns you want the AI to follow, if you look closely at the provided svelte code, you will notice that it uses the older Svelte 4 syntax with `export let` for props instead of the newer runes based syntax (`$props()`). This project was generated largely with AI but syntax was not specified and there were few previous examples for it to discover and follow. For some reason most AI models default to the older syntax, which still works (for now) but is not what was wanted.
+>
+>A pattern of the style of Svelte syntax desired should have been provided in the prompt to ensure the generated code followed the same style. This is an example of how providing patterns can help maintain consistency and reduce the amount of correction needed after generation.
 
 7. **Ask the AI for one piece**, not the full feature. For example:
    - "Add the database column and migration."
