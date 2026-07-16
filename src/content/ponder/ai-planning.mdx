@@ -130,7 +130,7 @@ You are encouraged to use AI to **fill** the template. You are not allowed to tr
    - what already exists vs what is missing,
    - constraints (no new dependencies, auth model, prototype vs production).
 4. **Ask for a complete draft** of the plan, not code.
-5. **Edit ruthlessly.** Especially goals, non-goals, FRs, ACs, data model, and API.
+5. **Edit ruthlessly.** Especially goals, non-goals, FRs (functional requirements), ACs (acceptance criteria), data model, and API.
 6. **Ask AI to critique its own plan** against the checklist below, then fix gaps yourself.
 
 Example prompt:
@@ -173,7 +173,7 @@ Once the plan is solid, use it as the primary context for coding prompts:
 
 1. Open a **new chat/session** for the feature (keeps context clean).
 2. Attach or paste the plan file.
-3. After implementation, verify against the matching FRs (functional requirements) and ACs (acceptance criterias).
+3. After implementation, verify against the matching FRs (functional requirements) and ACs (acceptance criteria).
 4. If the AI proposes something outside the plan, either update the plan deliberately or reject the change.
 
 Connect this to the habits from [AI for Development](/ponder/ai-development): plan first, small patches, tests or checks that prove done, and treat generated code as a draft until reviewed.
