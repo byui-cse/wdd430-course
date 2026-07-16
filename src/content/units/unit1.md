@@ -21,6 +21,7 @@ slug: unit1
 - [Teamwork](../../ponder/team-building)
 - [Web Dev Review](../../ponder/web-review-tic)
 - [Spec Driven development](../../ponder/spec-driven)
+- [Planning with AI](../../ponder/ai-planning)
 
 ## Prove
 

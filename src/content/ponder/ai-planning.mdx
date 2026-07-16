@@ -14,3 +14,209 @@ import Details from '../../components/Details.astro'
 
 ## Introduction
 
+In the [Spec Driven Development](/ponder/spec-driven) activity you built a high-level specification for what you want to build. That document answers *what* and *why*.
+
+This activity is about the next layer: a **feature implementation plan**. That plan answers *how this one feature will land in the product* so that you (and AI) stay focused when you implement.
+
+Vague prompts like "add notifications" produce vague results. A plan that names the problem, acceptance criteria, data model, API, UI states, and test strategy gives the model a bounded job. Your review job becomes checking the output against the plan instead of guessing whether it is "good enough."
+
+By the end of this activity, you should be able to:
+
+- Explain why a feature plan improves AI-assisted implementation.
+- Use a shared implementation-plan template for a single feature.
+- Ask AI to draft a plan, then edit it until the requirements are testable.
+- Hand a plan (not a vague wish) to an implementer—human or AI.
+
+## **01** Why Plan Before You Prompt
+
+AI is good at filling in structure and generating plausible code. It is much weaker when the problem is underspecified.
+
+Without a plan you often get:
+
+- **Scope creep** — extra pages, libraries, or "nice to haves" you never asked for.
+- **Missing edges** — no empty, loading, or error states; no auth rules; no migration story.
+- **Unverifiable success** — no acceptance criteria, so nobody knows when the feature is done.
+- **Architectural drift** — each prompt invents a slightly different pattern.
+
+A solid plan does three things for AI work:
+
+1. **Bounds the task** — problem, goals, and non-goals keep generation narrow.
+2. **Defines done** — functional requirements and Given/When/Then acceptance criteria become the review checklist.
+3. **Connects layers** — data, API, UI, and tests are listed together so the implementation does not forget a layer.
+
+> Rule of thumb: if you would not hand the prompt to a teammate and expect a correct PR, do not hand it to AI either. Write the plan first.
+
+## **02** The Feature Implementation Plan Template
+
+Download and open the course template:
+
+**[Feature implementation plan template](/files/_template.md)**
+
+Copy it into your project (for example `docs/plans/1.1-feature-name.md`) and replace the placeholders for one feature at a time. One feature = one plan file. Do not try to plan the entire product in a single document.
+
+The template has a metadata table plus numbered sections. You will not always fill every line in full detail, but you should **not leave a section blank without a reason**. If a section does not apply, write `N/A` and a one-line why (for example: "No AI/ML in this feature").
+
+### Metadata (at the top)
+
+Capture identity and sequencing before you dive into design:
+
+| Field | Why it matters |
+|---|---|
+| Feature ID / name | Stable label for issues, PRs, and AI context |
+| Severity | Helps the team order work (blocker vs nice-to-have) |
+| Status today | MISSING / PARTIAL / THIN — honest baseline |
+| Estimated effort | Forces a realistic slice (XS–XL) |
+| Depends on / Unblocks | Sequencing so AI does not invent prerequisites |
+
+### Core sections (always treat these seriously)
+
+1. **Problem statement** — What is missing, who is hurt, what outcome fixing it creates.
+2. **Goals / Non-goals** — Outcomes you must hit, and explicit out-of-scope items to stop scope creep.
+3. **Personas & user stories** — "As a … I want … so that …" from the roles that matter for *this* feature.
+4. **Functional requirements** — Numbered, testable, using MUST / SHOULD / MAY (RFC 2119).
+5. **Non-functional requirements** — Performance, security, privacy, accessibility, reliability, etc. Only the ones that apply; still name them so they are not forgotten.
+6. **Acceptance criteria** — Given / When / Then. Each AC should map to at least one test (automated if possible).
+
+### Design and delivery sections
+
+7. **Data model** — Tables/columns, constraints, migrations, backfill.
+8. **API surface** — Routes, auth scope, request/response shapes, rate limits.
+9. **UI / UX** — Pages/components, flows, empty/loading/error states, a11y, responsive behavior.
+10. **AI / ML** — Only if the feature uses models (prompts, eval, fallback, PII, cost).
+11. **Integration points** — External services and internal modules (file paths help AI stay local).
+12. **Dependencies & sequencing** — What must ship before/after this feature.
+13. **Risks & mitigations** — Likelihood, impact, mitigation table.
+14. **Rollout plan** — Feature flags, migration order, rollback.
+15. **Test plan** — Unit, integration, E2E, security, a11y, performance, manual.
+16. **Documentation & training** — What docs update when this ships.
+17. **Open questions** — Decisions still needing an owner (do not hide unknowns).
+18. **References** — Related code paths, standards, and sibling plans.
+
+<Details summary="What a thin vs strong plan looks like">
+
+**Thin (weak for AI):**
+
+```text
+Add a wishlist. Users can save products. Use the existing DB.
+```
+
+**Stronger (ready to implement):**
+
+```text
+Problem: Shoppers cannot save products for later; cart-only flow loses interest.
+Goals: Authenticated users can add/remove wishlist items; list survives refresh.
+Non-goals: Public share links; recommendations based on wishlist.
+FR-1. The system MUST allow an authenticated user to add a product id to their wishlist.
+AC-1. Given a logged-in user on a product page, when they click "Save", then the product appears on /wishlist after refresh.
+Data: wishlist_items (user_id, product_id, created_at), unique (user_id, product_id).
+API: POST/DELETE /api/wishlist/:productId, GET /api/wishlist (auth required).
+```
+
+The second version gives AI enough structure to implement and gives you enough structure to reject wrong output.
+
+</Details>
+
+## **03** Using AI to Draft the Plan (Not Skip It)
+
+You are encouraged to use AI to **fill** the template. You are not allowed to treat the first draft as finished.
+
+### Recommended workflow
+
+1. **Pick one feature** from your project (or bakeoff MVP)—small enough for about a week of student effort or less.
+2. **Paste the empty template** (or link the file in your editor) into the chat or agent context.
+3. **Give product context**, not implementation fluff:
+   - one-paragraph product description,
+   - current stack (if known),
+   - what already exists vs what is missing,
+   - constraints (no new dependencies, auth model, prototype vs production).
+4. **Ask for a complete draft** of the plan, not code.
+5. **Edit ruthlessly.** Especially goals, non-goals, FRs, ACs, data model, and API.
+6. **Ask AI to critique its own plan** against the checklist below, then fix gaps yourself.
+
+Example prompt:
+
+```text
+Fill out this feature implementation plan template for one feature only.
+
+Feature: {short name}
+Product context: {2–4 sentences}
+Already exists: {list}
+Must not change: {list}
+Stack (if known): {stack}
+Constraints: prototype-friendly; prefer existing patterns; do not invent unrelated features.
+
+Use the template structure exactly. For any section that does not apply, write N/A and why.
+Write functional requirements with MUST/SHOULD/MAY.
+Write acceptance criteria in Given/When/Then form.
+Do not write implementation code yet.
+```
+
+### Review checklist (your job)
+
+Before you use the plan for implementation, confirm:
+
+- [ ] Problem statement names a real user/business gap.
+- [ ] Non-goals would stop at least one common wrong interpretation.
+- [ ] Every MUST requirement is testable.
+- [ ] Each acceptance criterion has a clear pass/fail.
+- [ ] Data + API + UI agree with each other (no UI field without a data source).
+- [ ] Auth/permissions are explicit if any route is protected.
+- [ ] Empty, loading, and error states are not ignored.
+- [ ] Open questions are listed, not silently assumed.
+- [ ] Effort estimate still matches a single feature, not a whole epic.
+
+> AI is excellent at sounding complete. Your review is what makes the plan *correct*.
+
+## **04** From Plan to Implementation
+
+Once the plan is solid, use it as the primary context for coding prompts:
+
+1. Open a **new chat/session** for the feature (keeps context clean).
+2. Attach or paste the plan file.
+3. After implementation, verify against the matching FRs (functional requirements) and ACs (acceptance criterias).
+4. If the AI proposes something outside the plan, either update the plan deliberately or reject the change.
+
+Connect this to the habits from [AI for Development](/ponder/ai-development): plan first, small patches, tests or checks that prove done, and treat generated code as a draft until reviewed.
+
+If you use Spec-Kit or a similar tool, this template is the feature-level cousin of `/speckit.plan` and `/speckit.tasks`. Project-level specs still matter; feature plans keep each story implementable.
+
+## **05** Exercise (about 30 minutes)
+
+Complete this for **one** feature from your project, bakeoff app, or a simple practice idea (for example: product reviews, wishlist, activity priority, or team invite).
+
+### Steps
+
+1. Copy [`/files/_template.md`](/files/_template.md) into your repo as something like `docs/plans/{id}-{slug}.md`.
+
+2. Fill the **Metadata** table and sections **1–7** (Problem through Acceptance Criteria) yourself or with AI assist. Spend most of your time here.
+
+3. Draft sections **8–10** (Data model, API, UI) at a level of detail a teammate could implement from.
+
+4. Skim **11–19**. Mark N/A where needed. Fill Risks, Test plan, and Open questions at least lightly—those sections catch the issues AI usually skips.
+
+5. Run a **self-review** with the checklist in section 03. Fix at least three weak spots (vague goals, untestable FRs, missing error states, etc.).
+
+6. Write a short reflection (5–8 sentences):
+   - Which template section forced the most clarity?
+   - Where did AI invent scope you had to cut?
+   - What would go wrong if you had prompted "just implement this feature" with no plan?
+
+### Optional team share
+
+If you are in a team, swap plans with a partner for five minutes. Each person should try to find:
+
+- one ambiguous requirement,
+- one missing non-goal,
+- one acceptance criterion that is not actually testable.
+
+Update the plan based on the feedback before you implement.
+
+## **06** Practical Habits
+
+1. **One feature, one plan file.** Large epics get split until each plan is reviewable in a sitting.
+2. **Non-goals are not optional.** They are how you stop AI (and teammates) from building the wrong product.
+3. **Acceptance criteria beat vibes.** If you cannot write Given/When/Then, you are not ready to implement.
+4. **Plans are living docs.** When scope changes, update the plan in the same PR as the code when possible.
+5. **Never skip the human edit.** Generating the plan with AI is fine; shipping the first draft unreviewed is not.
+
+When you finish this activity, keep the filled plan. Use it as the context document the next time you ask AI (or a teammate) to implement that feature.
