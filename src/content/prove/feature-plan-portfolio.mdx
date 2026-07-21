@@ -1,0 +1,123 @@
+---
+title: Feature Plan Portfolio
+description: Expand your project specification into a complete set of feature implementation plans for your full MVP scope.
+time: 120 minutes
+aiUsage: green
+---
+
+import Details from '../../components/Details.astro'
+
+## Overview
+
+Last week you created a project-level specification in [Project Specification](../../prove/project-proposal) and refined it with the habits from [Spec Driven Development](../../ponder/spec-driven).
+
+This week, you will scale up the process from [AI for Planning](/ponder/ai-planning): instead of planning one feature, you will produce a plan file for every core MVP feature in your application.
+
+By the end of this activity, your team should have a practical planning set that can drive implementation without relying on vague prompts.
+
+## Objectives
+
+- Translate your project specification into feature-sized implementation plans.
+- Produce one plan file per MVP feature using the shared template.
+- Define clear acceptance criteria and test expectations for each feature.
+- Sequence features so the team can implement in a realistic order.
+
+## **01** Prepare Your Feature List
+
+Start from your approved specification and extract the MVP features only.
+
+1. Re-open your specification from [Project Specification](../../prove/project-proposal).
+2. Create a numbered list of all MVP features.
+3. Split any oversized item until each feature can be implemented in about one week of student effort or less.
+4. Mark each feature as one of:
+   - independent,
+   - blocked by another feature, or
+   - infrastructure/supporting.
+
+If your list still contains broad labels like "user system" or "dashboard," split those into smaller, testable slices before continuing.
+
+## **02** Create One Plan File Per Feature
+
+For each MVP feature, repeat the same workflow used in [AI for Planning](/ponder/ai-planning).
+
+1. Copy the template from [/files/_template.md](/files/_template.md).
+2. Create one file per feature using a consistent naming scheme such as `docs/plans/F{n}-{slug}.md`.
+3. Fill the metadata and sections in order.
+4. Keep one plan focused on one feature only. Do not merge multiple features into one file.
+
+Minimum expectation per plan:
+
+- Metadata complete (ID/name, severity, status, effort, dependencies).
+- Sections 1-7 complete with testable requirements.
+- Sections 8-10 drafted clearly enough for a teammate to implement.
+- Risks, test plan, and open questions not left blank (use `N/A` with a reason when appropriate).
+
+<Details summary="What counts as complete for each plan">
+
+A plan is considered complete when all of these are true:
+
+- Functional requirements use MUST/SHOULD/MAY and are testable.
+- Acceptance criteria are written in Given/When/Then format.
+- Data, API, and UI sections agree with each other.
+- Empty, loading, and error states are documented.
+- Auth and permissions are explicit where needed.
+- At least one meaningful test case is mapped to each acceptance criterion.
+
+</Details>
+
+## **03** Use AI as a Drafting Assistant (Per Feature)
+
+You may use AI to draft each plan, but do not skip review.
+
+Recommended loop for each feature:
+
+1. Paste the template and feature context.
+2. Ask for a plan draft only (no implementation code).
+3. Critique the draft against the checklist from [AI for Planning](/ponder/ai-planning).
+4. Edit weak sections manually.
+5. Re-run one focused critique pass for unresolved gaps.
+
+> Treat every plan as a contract for implementation. If wording is vague, implementation quality will be vague.
+
+## **04** Build a Cross-Feature Sequence
+
+After all feature plans are drafted, create a short sequencing note in `docs/plans/README.md` that includes:
+
+1. Recommended implementation order.
+2. Dependency map (what blocks what).
+3. First feature to implement and why.
+4. Risks that could delay multiple features.
+
+A simple table is enough:
+
+| Order | Feature ID | Depends on | Why this order |
+|---|---|---|---|
+| 1 | F1-auth-basics | none | Unlocks protected routes |
+| 2 | F2-profile-crud | F1 | First authenticated CRUD flow |
+
+## **05** Deliverables
+
+Submit the following:
+
+1. A feature inventory list (MVP only).
+2. A plan file for each MVP feature in `docs/plans/`.
+3. A `docs/plans/README.md` sequencing note.
+4. A short reflection (5-8 sentences) answering:
+   - Which feature was hardest to make testable?
+   - Where did AI repeatedly add scope you had to cut?
+   - Which dependency changed your implementation order?
+   - What implementation risk did planning reveal early?
+
+## **06** Grading Focus
+
+Your score should prioritize planning quality over volume.
+
+High-quality submissions usually show:
+
+- clear feature slicing,
+- concrete and testable acceptance criteria,
+- realistic sequencing,
+- consistent structure across all plan files,
+- evidence of human review and correction of AI drafts.
+
+If one plan is excellent but the others are thin, your team will still struggle during implementation. Consistency across the full feature set matters most.
