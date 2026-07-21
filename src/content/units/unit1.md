@@ -21,8 +21,10 @@ slug: unit1
 - [Teamwork](../../ponder/team-building)
 - [Web Dev Review](../../ponder/web-review-tic)
 - [Spec Driven development](../../ponder/spec-driven)
+- [AI for development](../../ponder/ai-development)
 - [Planning with AI](../../ponder/ai-planning)
 
 ## Prove
 
 - [Project Specification](../../prove/project-proposal)
+- [Feature Plan Portfolio](../../prove/feature-plan-portfolio)
